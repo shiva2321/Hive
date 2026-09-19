@@ -656,6 +656,68 @@
   }
 
   // ----------------------------------------------------------------------------
+  // 6b. Generic Sequential Backfill (providers without a private API, e.g. Gemini)
+  // ----------------------------------------------------------------------------
+  // Trade-off: this navigates the current tab through each discovered
+  // conversation in sequence. That's visibly disruptive, but it only relies
+  // on public DOM extraction (extractCurrentConversation), not an
+  // undocumented internal API we haven't verified.
+  async function extractAllConversationsBySequentialNavigation(progressCb) {
+    const discovered = await deepAutoScrollSidebar((count) => {
+      if (progressCb) progressCb("discovering", `Found ${count} conversations in sidebar...`, 0, count);
+    });
+
+    if (discovered.length === 0) {
+      const active = extractCurrentConversation();
+      return active ? [active] : [];
+    }
+
+    const results = [];
+    const originalUrl = window.location.href;
+
+    for (let i = 0; i < discovered.length; i++) {
+      const item = discovered[i];
+      if (progressCb) {
+        progressCb("crawling", `Opening ${i + 1}/${discovered.length}: "${item.title.slice(0, 30)}..."`, i, discovered.length);
+      }
+
+      try {
+        const targetUrl = new URL(item.id, window.location.origin).href;
+
+        if (targetUrl !== window.location.href) {
+          if (item.element && typeof item.element.click === "function" && document.body.contains(item.element)) {
+            item.element.click();
+          } else {
+            window.location.href = targetUrl;
+          }
+          await new Promise(r => setTimeout(r, 1800));
+        }
+
+        // Wait for streaming to settle before extracting.
+        for (let wait = 0; wait < 10; wait++) {
+          const stillStreaming = document.querySelector("[data-is-streaming='true'], .result-streaming, .streaming") !== null;
+          if (!stillStreaming) break;
+          await new Promise(r => setTimeout(r, 500));
+        }
+
+        const convo = extractCurrentConversation();
+        if (convo) results.push(convo);
+      } catch (err) {
+        console.warn(`[Hive] Failed to extract conversation "${item.title}":`, err.message);
+      }
+    }
+
+    // Best-effort return to where the crawl started.
+    try {
+      if (window.location.href !== originalUrl) {
+        window.location.href = originalUrl;
+      }
+    } catch {}
+
+    return results;
+  }
+
+  // ----------------------------------------------------------------------------
   // 6. Organization ID Resolver & Claude Tree Extractor (Zero Page Navigation)
   // ----------------------------------------------------------------------------
   async function resolveClaudeOrgId() {
@@ -1134,8 +1196,18 @@
           label: label
         });
       });
+    } else if (provider === "gemini") {
+      conversations = await extractAllConversationsBySequentialNavigation((status, label, current, total) => {
+        chrome.runtime.sendMessage({
+          type: "CRAWL_PROGRESS",
+          status: status,
+          total: total || 0,
+          current: current || 0,
+          label: label
+        });
+      });
     } else {
-      // For other providers, extract active conversation
+      // For providers without a backfill implementation yet, extract active conversation only.
       const active = extractCurrentConversation();
       if (active) conversations.push(active);
     }
