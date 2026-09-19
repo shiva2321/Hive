@@ -9,9 +9,12 @@ import {
   UserInsight,
   HiveInquiry
 } from "../core/types";
+import { ZeroKnowledgeCrypto } from "../core/crypto";
+import { config } from "../config/env";
 
 export class GraphStore {
   private db: Database.Database;
+  private localKey: Buffer;
 
   constructor(dbPath?: string) {
     const finalPath = dbPath || path.join(process.cwd(), "memory_graph.sqlite");
@@ -23,6 +26,9 @@ export class GraphStore {
     this.db = new Database(finalPath);
     this.db.pragma("journal_mode = WAL");
     this.initSchema();
+
+    // Single local tenant — this is a local-first, single-user store.
+    this.localKey = ZeroKnowledgeCrypto.deriveTenantKey("local");
   }
 
   private initSchema() {
@@ -121,6 +127,36 @@ export class GraphStore {
     `);
   }
 
+  /**
+   * Encrypts message content before it's written to disk. Stores the
+   * EncryptedPayload as a JSON string in the same `content` column that
+   * used to hold plaintext — no schema change needed.
+   */
+  private encryptContent(plaintext: string): string {
+    if (!plaintext) return plaintext;
+    const encrypted = ZeroKnowledgeCrypto.encrypt(plaintext, this.localKey);
+    return JSON.stringify(encrypted);
+  }
+
+  /**
+   * Decrypts message content read back from disk. Falls back to returning
+   * the raw stored value unchanged if it isn't in the encrypted JSON shape —
+   * this is what makes reading pre-existing plaintext rows (saved before
+   * this fix existed) safe, with no forced migration required.
+   */
+  private decryptContent(stored: string): string {
+    if (!stored) return stored;
+    try {
+      const parsed = JSON.parse(stored);
+      if (parsed && typeof parsed === "object" && parsed.iv && parsed.ciphertext && parsed.tag) {
+        return ZeroKnowledgeCrypto.decrypt(parsed, this.localKey);
+      }
+    } catch {
+      // Not JSON, or not our encrypted shape — pre-existing plaintext row.
+    }
+    return stored;
+  }
+
   public saveConversations(conversations: CanonicalConversation[]) {
     const insertConvo = this.db.prepare(`
       INSERT OR REPLACE INTO conversations (id, source, source_id, title, created_at, updated_at, metadata_json)
@@ -150,7 +186,7 @@ export class GraphStore {
             conversation_id: c.id,
             role: m.role,
             timestamp: m.timestamp,
-            content: m.content,
+            content: this.encryptContent(m.content),
             code_snippets_json: JSON.stringify(m.codeSnippets),
             token_count: m.tokenCountEst
           });
@@ -635,7 +671,7 @@ export class GraphStore {
         id: m.id,
         role: m.role,
         timestamp: m.timestamp,
-        content: m.content,
+        content: this.decryptContent(m.content),
         codeSnippets: JSON.parse(m.code_snippets_json || "[]"),
         tokenCount: m.token_count
       }))
@@ -662,9 +698,9 @@ export class GraphStore {
             id: m.id,
             role: m.role,
             timestamp: m.timestamp,
-            content: m.content,
+            content: this.decryptContent(m.content),
             codeSnippets: JSON.parse(m.code_snippets_json || "[]"),
-            tokenCountEst: m.token_count || Math.ceil((m.content || "").length / 4)
+            tokenCountEst: m.token_count || Math.ceil((this.decryptContent(m.content) || "").length / 4)
           }))
         });
       }
