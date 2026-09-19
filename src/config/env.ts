@@ -31,7 +31,7 @@ const envSchema = z.object({
 
   // OpenRouter LLM Substrate
   OPENROUTER_API_KEY: z.string().optional(),
-  OPENROUTER_DEFAULT_MODEL: z.string().default("google/gemini-2.0-flash-001")
+  OPENROUTER_DEFAULT_MODEL: z.string().default("google/gemini-2.5-flash")
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;

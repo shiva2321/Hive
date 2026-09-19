@@ -62,7 +62,7 @@ router.get("/config", async (req: Request, res: Response) => {
     res.json({
       hasKey: !!key,
       maskedKey: masked,
-      defaultModel: config.OPENROUTER_DEFAULT_MODEL || "google/gemini-2.0-flash-001",
+      defaultModel: config.OPENROUTER_DEFAULT_MODEL || "google/gemini-2.5-flash",
       status
     });
   } catch (err: any) {
@@ -164,7 +164,7 @@ router.post("/extract", async (req: Request, res: Response) => {
   const {
     mode = "all", // "single" | "project" | "all"
     targetId,
-    model = config.OPENROUTER_DEFAULT_MODEL || "google/gemini-2.0-flash-001",
+    model = config.OPENROUTER_DEFAULT_MODEL || "google/gemini-2.5-flash",
     maxTokensPerChunk = 8000,
     limit
   } = req.body;
