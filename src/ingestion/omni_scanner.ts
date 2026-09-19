@@ -1,10 +1,12 @@
 import fs from "fs";
 import path from "path";
 import os from "os";
-import { CanonicalConversation } from "../core/types";
+import { CanonicalConversation, CanonicalMessage } from "../core/types";
 import { LocalIDEParser } from "./parsers/local_ide_parser";
 import { ClaudeCodeParser } from "./parsers/claude_code_parser";
 import { CursorParser } from "./parsers/cursor_parser";
+import { SecretSanitizer } from "./sanitizer";
+import { ChatGPTParser } from "./parsers/chatgpt_parser";
 
 export interface OmniScanResult {
   totalFound: number;
@@ -31,7 +33,7 @@ export class OmniScanner {
       gemini: 0
     };
 
-    // 1. Antigravity & Antigravity IDE Transcripts
+    // 1. Antigravity & Antigravity IDE Transcripts + Brain Notes
     const antigravityRoots = [
       path.join(userHome, ".gemini", "antigravity", "brain"),
       path.join(userHome, ".gemini", "antigravity-ide", "brain")
@@ -42,8 +44,11 @@ export class OmniScanner {
         try {
           const dirs = fs.readdirSync(bDir);
           for (const dir of dirs) {
-            const logDir = path.join(bDir, dir, ".system_generated", "logs");
-            const transcriptPath = path.join(logDir, "transcript.jsonl");
+            const sessionDir = path.join(bDir, dir);
+            if (!fs.statSync(sessionDir).isDirectory()) continue;
+
+            // Format A: transcript.jsonl under .system_generated/logs/
+            const transcriptPath = path.join(sessionDir, ".system_generated", "logs", "transcript.jsonl");
             if (fs.existsSync(transcriptPath)) {
               try {
                 const content = fs.readFileSync(transcriptPath, "utf-8");
@@ -54,6 +59,55 @@ export class OmniScanner {
                 }
               } catch {}
             }
+
+            // Format B: standalone .md brain notes directly in the session folder
+            try {
+              const mdFiles = fs.readdirSync(sessionDir).filter(f => f.endsWith(".md"));
+              for (const mdFile of mdFiles) {
+                try {
+                  const mdPath = path.join(sessionDir, mdFile);
+                  const rawText = fs.readFileSync(mdPath, "utf-8");
+                  if (!rawText.trim()) continue;
+
+                  const stat = fs.statSync(mdPath);
+                  const fileTitle = mdFile.replace(/\.md$/, "").replace(/[-_]/g, " ");
+                  const timestamp = stat.mtime.toISOString();
+                  const sanitized = SecretSanitizer.sanitize(rawText);
+                  const safeId = `antigravity_brain_${dir}_${mdFile}`.replace(/[^a-zA-Z0-9_-]/g, "_");
+
+                  const noteConvo: CanonicalConversation = {
+                    id: safeId,
+                    source: "antigravity",
+                    sourceId: `${dir}/${mdFile}`,
+                    title: `Antigravity Brain Note: ${fileTitle}`,
+                    createdAt: timestamp,
+                    updatedAt: timestamp,
+                    messages: [
+                      {
+                        id: `${safeId}_req`,
+                        role: "user",
+                        timestamp,
+                        content: `Antigravity Brain Note: ${fileTitle}`,
+                        codeSnippets: [],
+                        tokenCountEst: 10
+                      },
+                      {
+                        id: `${safeId}_doc`,
+                        role: "assistant",
+                        timestamp,
+                        content: sanitized.cleanedText,
+                        codeSnippets: ChatGPTParser.extractCodeSnippets(sanitized.cleanedText),
+                        tokenCountEst: Math.ceil(sanitized.cleanedText.length / 4)
+                      }
+                    ],
+                    metadata: { tool: "antigravity", type: "brain_note", sessionId: dir, fileName: mdFile }
+                  };
+
+                  conversations.push(noteConvo);
+                  counts.antigravity++;
+                } catch {}
+              }
+            } catch {}
           }
         } catch {}
       }
