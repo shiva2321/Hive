@@ -1,0 +1,57 @@
+{
+  "manifest_version": 3,
+  "name": "Hive: Universal Cross-AI Memory Sync",
+  "version": "2.1.0",
+  "description": "Interactive, privacy-first sync from ChatGPT, Claude, Gemini, DeepSeek, Perplexity, Grok, and Mistral directly into Hive.",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "tabs",
+    "alarms"
+  ],
+  "host_permissions": [
+    "*://chatgpt.com/*",
+    "*://*.openai.com/*",
+    "*://claude.ai/*",
+    "*://gemini.google.com/*",
+    "*://*.perplexity.ai/*",
+    "*://chat.deepseek.com/*",
+    "*://*.x.ai/*",
+    "*://chat.mistral.ai/*",
+    "http://localhost:42424/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://chatgpt.com/*",
+        "*://*.openai.com/*",
+        "*://claude.ai/*",
+        "*://gemini.google.com/*",
+        "*://*.perplexity.ai/*",
+        "*://chat.deepseek.com/*",
+        "*://*.x.ai/*",
+        "*://chat.mistral.ai/*"
+      ],
+      "js": ["jszip.min.js", "content_script.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Hive: Universal AI Memory Sync",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  }
+}
+

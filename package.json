@@ -1,0 +1,47 @@
+{
+  "name": "universal-ai-memory",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "tsx test/run_tests.ts",
+    "test:enterprise": "tsx test/run_enterprise_tests.ts",
+    "test:mcp": "tsx test/test_mcp_tools.ts",
+    "test:all": "tsx test/run_tests.ts && tsx test/run_enterprise_tests.ts && tsx test/test_mcp_tools.ts",
+    "start:server": "tsx src/api/server.ts",
+    "start:mcp": "node dist/serving/mcp_server.js",
+    "cli": "tsx src/cli.ts",
+    "package:extension": "node scripts/package_extension.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "@types/jszip": "^3.4.0",
+    "adm-zip": "^0.6.1",
+    "better-sqlite3": "^13.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "ioredis": "^6.0.0",
+    "jsonwebtoken": "^9.0.3",
+    "jszip": "^3.10.2",
+    "pg": "^8.23.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/adm-zip": "^0.5.8",
+    "@types/better-sqlite3": "^9.6.0",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^22.20.3",
+    "@types/pg": "^8.23.1",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.23.13",
+    "typescript": "^7.0.2"
+  }
+}

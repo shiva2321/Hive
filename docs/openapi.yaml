@@ -1,0 +1,144 @@
+openapi: 3.1.0
+info:
+  title: Universal Cross-AI Memory & Project Graph API
+  version: 1.0.0
+  description: |
+    Production-grade enterprise REST API for ingesting, clustering, and querying
+    cross-model developer memories, project architectures, and established guardrails.
+servers:
+  - url: http://localhost:42424
+    description: Local Gateway / Development
+  - url: https://api.universalmemory.ai
+    description: Production Multi-Tenant Cloud
+
+paths:
+  /healthz/liveness:
+    get:
+      summary: Liveness probe
+      description: Check if server process is running.
+      responses:
+        '200':
+          description: Process healthy
+  
+  /healthz/readiness:
+    get:
+      summary: Readiness probe
+      description: Verify active connectivity to database and memory subsystems.
+      responses:
+        '200':
+          description: Systems operational
+        '503':
+          description: Database or critical dependency unavailable
+
+  /healthz/metrics:
+    get:
+      summary: Prometheus Metrics
+      description: Standard RED metrics formatted for Prometheus scraping.
+      responses:
+        '200':
+          description: Plaintext metric exposition
+
+  /api/v1/ingest/async:
+    post:
+      summary: Queue asynchronous ingestion job
+      security:
+        - BearerAuth: []
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                filePath:
+                  type: string
+                  description: Path to local zip/json archive
+                payload:
+                  type: object
+                  description: Raw conversation payload from web extension
+                passphrase:
+                  type: string
+                  description: Optional client-side Zero-Knowledge passphrase
+      responses:
+        '202':
+          description: Ingestion job queued
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jobId:
+                    type: string
+                  status:
+                    type: string
+                  statusUrl:
+                    type: string
+
+  /api/v1/ingest/jobs/{jobId}:
+    get:
+      summary: Poll ingestion job status
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Job status and progress percentage
+        '404':
+          description: Job not found
+
+  /api/v1/projects:
+    get:
+      summary: List isolated software projects
+      security:
+        - BearerAuth: []
+        - ApiKeyAuth: []
+      responses:
+        '200':
+          description: List of projects with tech stacks and decisions
+
+  /api/v1/projects/{id}/rules:
+    get:
+      summary: Export CLAUDE.md or .cursorrules for a project
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: format
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [claude, cursor]
+      responses:
+        '200':
+          description: Markdown or plaintext rule definitions
+
+  /api/v1/graph/query:
+    get:
+      summary: Query memory graph
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Matched projects, entities, and active decisions
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key

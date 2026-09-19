@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: uam-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: universal_memory
+      POSTGRES_USER: uam_admin
+      POSTGRES_PASSWORD: uam_secure_production_password_2026
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ../src/db/migrations/001_initial_schema.sql:/docker-entrypoint-initdb.d/001_initial_schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U uam_admin -d universal_memory"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: uam-redis
+    restart: always
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.api
+    container_name: uam-api
+    restart: always
+    ports:
+      - "42424:42424"
+    environment:
+      NODE_ENV: production
+      PORT: 42424
+      STORAGE_MODE: postgres
+      DATABASE_URL: postgres://uam_admin:uam_secure_production_password_2026@postgres:5432/universal_memory
+      REDIS_URL: redis://redis:6379
+      ENCRYPTION_MASTER_KEY: "0123456789abcdef0123456789abcdef0123456789abcdef"
+      JWT_SECRET: "super-secure-enterprise-jwt-secret-key-1234"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  redisdata:

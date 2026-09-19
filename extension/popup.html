@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Hive: Cross-AI Universal Memory Sync</title>
+  <style>
+    :root {
+      --bg: #060913;
+      --surface: #0f1526;
+      --surface-hover: #18223d;
+      --border: #1e293b;
+      --accent: #6366f1;
+      --accent-glow: rgba(99, 102, 241, 0.25);
+      --green: #10b981;
+      --amber: #f59e0b;
+      --cyan: #38bdf8;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    body {
+      width: 330px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", sans-serif;
+      margin: 0;
+      padding: 14px 16px;
+      background: var(--bg);
+      color: var(--text);
+      box-sizing: border-box;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+    }
+    .title {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.3px;
+    }
+    .brand-icon {
+      font-size: 17px;
+      filter: drop-shadow(0 0 6px var(--amber));
+    }
+
+    .status-badge {
+      font-size: 10px;
+      padding: 3px 9px;
+      border-radius: 9999px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+    .status-badge.online {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border-color: rgba(16, 185, 129, 0.35);
+    }
+    .status-badge.cloud {
+      background: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
+      border-color: rgba(56, 189, 248, 0.35);
+    }
+
+    .active-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .stats-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      border-radius: 9px;
+      margin-bottom: 12px;
+      font-size: 11px;
+    }
+    .stats-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+      color: var(--text-muted);
+    }
+    .stats-item span:last-child {
+      font-weight: 600;
+      color: #f1f5f9;
+    }
+
+    .queue-banner {
+      display: none;
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      border-radius: 8px;
+      padding: 9px 11px;
+      margin-bottom: 12px;
+      font-size: 11px;
+      color: #fef3c7;
+    }
+
+    button {
+      width: 100%;
+      padding: 9px 12px;
+      background: var(--accent);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 7px;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    button:hover {
+      background: #4f46e5;
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-secondary {
+      background: #1e293b;
+      border-color: #334155;
+      color: #cbd5e1;
+    }
+    .btn-secondary:hover {
+      background: #334155;
+      color: #fff;
+    }
+
+    .btn-amber {
+      background: rgba(245, 158, 11, 0.2);
+      border-color: rgba(245, 158, 11, 0.5);
+      color: #f59e0b;
+    }
+    .btn-amber:hover {
+      background: #f59e0b;
+      color: #000;
+    }
+
+    .provider-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 5px;
+      margin-bottom: 12px;
+    }
+    .provider-btn {
+      background: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 6px;
+      padding: 6px 2px;
+      font-size: 10px;
+      font-weight: 500;
+      color: #cbd5e1;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      transition: all 0.15s;
+    }
+    .provider-btn:hover {
+      background: #1f2937;
+      color: #fff;
+      border-color: var(--cyan);
+    }
+
+    /* Settings accordion */
+    .settings-panel {
+      display: none;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 12px;
+      font-size: 11px;
+    }
+    .settings-input {
+      width: 100%;
+      background: #090d1a;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      color: #fff;
+      padding: 6px 8px;
+      font-size: 11px;
+      margin-top: 4px;
+      margin-bottom: 8px;
+      box-sizing: border-box;
+    }
+
+    .footer {
+      font-size: 10px;
+      text-align: center;
+      color: #64748b;
+      margin-top: 10px;
+    }
+    .msg {
+      font-size: 11px;
+      color: var(--cyan);
+      text-align: center;
+      margin-top: 5px;
+      min-height: 16px;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="title">
+      <span class="brand-icon">🐝</span>
+      <span>Hive Memory</span>
+    </div>
+    <div id="statusBadge" class="status-badge">Checking...</div>
+  </div>
+
+  <div class="active-card">
+    <div style="display: flex; flex-direction: column; gap: 2px;">
+      <span id="activeProvider" style="color: #60a5fa; font-weight: 600;">Detecting AI tab...</span>
+      <span id="activeTabUrl" style="font-size: 10px; color: #94a3b8; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">-</span>
+    </div>
+    <span id="activeTabBadge" style="font-size: 9px; padding: 2px 6px; border-radius: 9999px; background: rgba(99, 102, 241, 0.2); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.3);">Sync Ready</span>
+  </div>
+
+  <!-- Staged Queue Notification (shown when offline chats are staged) -->
+  <div id="queueBanner" class="queue-banner">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+      <span>📦 <strong id="queueCount">0</strong> chats staged locally in browser</span>
+    </div>
+    <button id="flushQueueBtn" class="btn-amber" style="margin-bottom: 0; padding: 5px 8px; font-size: 11px;">⚡ Flush Queue to Hive Native</button>
+  </div>
+
+  <div class="stats-box">
+    <div class="stats-item"><span>Knowledge Nodes:</span><span id="nodeCount">-</span></div>
+    <div class="stats-item"><span>Discovered Projects:</span><span id="projCount">-</span></div>
+    <div class="stats-item"><span>Active Connection:</span><span id="connModeLabel" style="color: #34d399;">Probing...</span></div>
+  </div>
+
+  <button id="syncTabBtn">⚡ Sync Current Chat to Hive</button>
+  <button id="exportZipBtn" class="btn-amber">📦 Export All Chats as Organized Archive (.zip)</button>
+  <button id="bulkSyncBtn" class="btn-secondary">🚀 Deep Sync All Sidebar Chats</button>
+  <button id="openPromptBtn" class="btn-secondary">💬 Open In-Page Consent Prompt</button>
+  <button id="openDashBtn" class="btn-secondary">🐝 Open Hive Brain Dashboard</button>
+
+  <div style="display: flex; justify-content: space-between; align-items: center; margin: 10px 0 6px 0;">
+    <span style="font-size: 11px; font-weight: 600; color: #94a3b8;">AI Providers:</span>
+    <a id="toggleSettingsLink" href="#" style="font-size: 10px; color: #818cf8; text-decoration: none;">⚙️ Cloud Settings</a>
+  </div>
+
+  <!-- Settings Panel -->
+  <div id="settingsPanel" class="settings-panel">
+    <div style="font-weight: 600; color: #fff; margin-bottom: 4px;">Cloud Fallback Ingestion:</div>
+    <label style="color: #94a3b8;">Endpoint URL:</label>
+    <input id="cloudEndpointInput" class="settings-input" placeholder="https://api.your-hive-cloud.com/v1/ingest">
+    <label style="color: #94a3b8;">Bearer Token (optional):</label>
+    <input id="cloudTokenInput" type="password" class="settings-input" placeholder="Bearer eyJhbGci...">
+    <button id="saveSettingsBtn" style="margin-bottom: 0; padding: 6px;">Save Cloud Config</button>
+  </div>
+
+  <div class="provider-grid">
+    <a class="provider-btn" href="https://chatgpt.com" target="_blank"><span>🤖</span><span>ChatGPT</span></a>
+    <a class="provider-btn" href="https://claude.ai" target="_blank"><span>🧠</span><span>Claude</span></a>
+    <a class="provider-btn" href="https://gemini.google.com" target="_blank"><span>✨</span><span>Gemini</span></a>
+    <a class="provider-btn" href="https://chat.deepseek.com" target="_blank"><span>⚡</span><span>DeepSeek</span></a>
+    <a class="provider-btn" href="https://www.perplexity.ai" target="_blank"><span>🔍</span><span>Perplexity</span></a>
+    <a class="provider-btn" href="https://x.ai" target="_blank"><span>🚀</span><span>Grok</span></a>
+    <a class="provider-btn" href="https://chat.mistral.ai" target="_blank"><span>🌊</span><span>Mistral</span></a>
+    <a class="provider-btn" id="openLocalHostBtn" href="http://localhost:42424" target="_blank"><span>🐝</span><span>Local</span></a>
+  </div>
+
+  <div id="progressContainer" style="display: none; margin-top: 8px;">
+    <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 3px;">
+      <span id="progressLabel" style="color: #94a3b8; font-size: 10px; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Crawling chats...</span>
+      <span id="progressFraction" style="font-weight: 600; color: var(--cyan);">0/0</span>
+    </div>
+    <div style="width: 100%; height: 6px; background: #1e293b; border-radius: 9999px; overflow: hidden;">
+      <div id="progressBar" style="width: 0%; height: 100%; background: #6366f1; transition: width 0.3s;"></div>
+    </div>
+  </div>
+
+  <div id="statusMsg" class="msg"></div>
+  <div class="footer">Hive Core • Dual System Native & Cloud Fallback</div>
+
+  <script src="jszip.min.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

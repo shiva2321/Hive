@@ -1,0 +1,24 @@
+# Environment & Secrets (High Security)
+.env
+.env.*
+*.key
+*.pem
+credentials.json
+
+# Dependencies
+node_modules/
+
+# Build artifacts
+dist/
+build/
+
+# Local databases
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+
+# Temp & scratch
+scratch/
+scratch_*.js
+*.log
+.tempmediaStorage/

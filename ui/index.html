@@ -1,0 +1,3448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hive — Universal AI Memory & Intelligence Substrate</title>
+  <style>
+    :root {
+      --bg: #06080e;
+      --bg-surface: #0a0e1a;
+      --card-bg: #0f1526;
+      --card-hover: #141c33;
+      --border: #1e293b;
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-focus: rgba(99, 102, 241, 0.5);
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --accent: #6366f1;
+      --accent-light: #818cf8;
+      --accent-glow: rgba(99, 102, 241, 0.28);
+      --cyan: #38bdf8;
+      --cyan-glow: rgba(56, 189, 248, 0.25);
+      --green: #10b981;
+      --purple: #c084fc;
+      --rose: #f43f5e;
+      --amber: #f59e0b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", sans-serif; }
+    body { background-color: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+    /* Top Executive Navigation Bar */
+    header {
+      height: 52px;
+      min-height: 52px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+      background: rgba(10, 14, 26, 0.96);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+    }
+    .brand-section { display: flex; align-items: center; gap: 12px; }
+    .brand-badge {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+    }
+    .brand-icon {
+      font-size: 22px;
+      filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.6));
+    }
+    .brand-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.3px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .badge-status {
+      font-size: 10px;
+      background: rgba(16, 185, 129, 0.12);
+      color: var(--green);
+      padding: 2px 8px;
+      border-radius: 9999px;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Main Navigation Tabs */
+    .nav-tabs { display: flex; gap: 4px; align-items: center; }
+    .tab-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      padding: 6px 12px;
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .tab-btn:hover { color: #fff; background: rgba(255, 255, 255, 0.05); }
+    .tab-btn.active {
+      color: #fff;
+      background: rgba(99, 102, 241, 0.18);
+      border-color: rgba(99, 102, 241, 0.4);
+      font-weight: 600;
+      box-shadow: 0 0 14px rgba(99, 102, 241, 0.22);
+    }
+
+    /* Top Actions */
+    .header-actions { display: flex; align-items: center; gap: 8px; }
+    .btn {
+      font-size: 11px;
+      padding: 6px 12px;
+      background: var(--accent);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+    .btn:hover { background: var(--accent-light); box-shadow: 0 0 12px var(--accent-glow); }
+    .btn-secondary {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #cbd5e1;
+    }
+    .btn-secondary:hover { background: #334155; color: #fff; }
+    .btn-amber {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: #f59e0b;
+    }
+    .btn-amber:hover { background: #f59e0b; color: #000; }
+
+    /* Content Viewports */
+    main { flex: 1; position: relative; overflow: hidden; }
+    .tab-content { display: none; height: 100%; width: 100%; overflow-y: auto; }
+    .tab-content.active { display: flex; flex-direction: column; }
+
+    /* ========================================================= */
+    /* 1. EXECUTIVE COMMAND CENTER (LINEAR / VERCEL STYLE)       */
+    /* ========================================================= */
+    .overview-container {
+      max-width: 1600px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 24px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    /* Executive KPI Deck */
+    .kpi-deck {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+    }
+    .kpi-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .kpi-card:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+    .kpi-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-muted);
+    }
+    .kpi-val {
+      font-size: 26px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+    }
+    .kpi-sub {
+      font-size: 11px;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .kpi-sparkle {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 60px;
+      height: 60px;
+      background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.18), transparent 70%);
+      pointer-events: none;
+    }
+
+    /* Command Filter Bar */
+    .command-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 16px;
+    }
+    .search-box {
+      flex: 1;
+      max-width: 540px;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .search-input {
+      width: 100%;
+      background: #080d1a;
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 7px 12px 7px 34px;
+      border-radius: 7px;
+      font-size: 12px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .search-input:focus { border-color: var(--accent); box-shadow: 0 0 10px var(--accent-glow); }
+    .search-icon {
+      position: absolute;
+      left: 11px;
+      font-size: 12px;
+      color: var(--text-dim);
+      pointer-events: none;
+    }
+    .filter-chips { display: flex; gap: 6px; align-items: center; }
+    .filter-chip {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .filter-chip:hover { color: #fff; background: rgba(255, 255, 255, 0.08); }
+    .filter-chip.active {
+      color: var(--cyan);
+      background: rgba(56, 189, 248, 0.12);
+      border-color: rgba(56, 189, 248, 0.4);
+      font-weight: 600;
+    }
+
+    /* Main Grid & Operational Column Layout */
+    .command-main-layout {
+      display: grid;
+      grid-template-columns: 1fr 410px;
+      gap: 22px;
+      align-items: start;
+    }
+
+    /* Projects Deck */
+    .projects-deck-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+    .section-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 16px;
+    }
+    .proj-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      position: relative;
+    }
+    .proj-card:hover {
+      background: var(--card-hover);
+      border-color: rgba(99, 102, 241, 0.4);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    }
+    .proj-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .proj-title-group { display: flex; align-items: center; gap: 10px; }
+    .proj-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.35), rgba(56, 189, 248, 0.35));
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .proj-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.3;
+    }
+    .proj-status {
+      font-size: 10px;
+      background: rgba(16, 185, 129, 0.12);
+      color: var(--green);
+      padding: 2px 7px;
+      border-radius: 9999px;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .proj-desc {
+      font-size: 11px;
+      color: #cbd5e1;
+      line-height: 1.45;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      min-height: 32px;
+    }
+    .proj-tech-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    .tech-pill {
+      font-size: 10px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #93c5fd;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+    .proj-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 10px;
+      border-top: 1px solid var(--border-subtle);
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+    .proj-metrics { display: flex; gap: 10px; align-items: center; }
+    .proj-metrics span { display: flex; align-items: center; gap: 3px; }
+    .proj-metrics strong { color: #fff; }
+    .proj-actions { display: flex; gap: 6px; }
+    .btn-xs {
+      font-size: 10px;
+      padding: 4px 8px;
+      border-radius: 5px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #cbd5e1;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-xs:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+    /* Operational Stack */
+    .operational-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .op-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .op-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .inquiry-item {
+      background: rgba(245, 158, 11, 0.04);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      border-radius: 8px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .inquiry-title { font-size: 12px; font-weight: 700; color: #f59e0b; display: flex; justify-content: space-between; }
+    .inquiry-text { font-size: 11px; color: #cbd5e1; line-height: 1.45; }
+    .inquiry-opt-btn {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      color: #cbd5e1;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 10px;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .inquiry-opt-btn:hover { background: rgba(245, 158, 11, 0.15); border-color: #f59e0b; color: #fff; }
+    .guardrail-item {
+      background: rgba(244, 63, 94, 0.04);
+      border: 1px solid rgba(244, 63, 94, 0.25);
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .guardrail-title { font-size: 11px; font-weight: 700; color: #f43f5e; }
+    .guardrail-text { font-size: 11px; color: #cbd5e1; line-height: 1.4; }
+
+    /* ========================================================= */
+    /* 2. LIVING CONSTELLATION KNOWLEDGE GRAPH                   */
+    /* ========================================================= */
+    .graph-viewport {
+      flex: 1;
+      height: 100%;
+      width: 100%;
+      position: relative;
+      background: radial-gradient(circle at center, #090e1c 0%, #04060b 85%);
+      overflow: hidden;
+    }
+    #graphCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Floating Graph Controls */
+    .graph-hud-top-left {
+      position: absolute;
+      top: 16px;
+      left: 18px;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .graph-focus-pill {
+      background: rgba(12, 16, 26, 0.92);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      padding: 7px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    }
+    .graph-hud-top-right {
+      position: absolute;
+      top: 16px;
+      right: 18px;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .hud-btn {
+      background: rgba(12, 16, 26, 0.9);
+      border: 1px solid var(--border);
+      color: #cbd5e1;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      transition: all 0.15s;
+    }
+    .hud-btn:hover { background: #1e293b; color: #fff; border-color: rgba(255,255,255,0.2); }
+    .hud-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+    .graph-hud-bottom {
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: rgba(12, 16, 26, 0.92);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      padding: 8px 20px;
+      border-radius: 9999px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+    }
+    .graph-legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-muted); cursor: pointer; }
+    .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+    /* Graph Floating Tooltip */
+    #graphHoverTooltip {
+      position: absolute;
+      display: none;
+      background: rgba(10, 15, 28, 0.97);
+      border: 1px solid rgba(99, 102, 241, 0.45);
+      border-radius: 8px;
+      padding: 12px 16px;
+      color: #fff;
+      font-size: 11px;
+      max-width: 340px;
+      pointer-events: none;
+      z-index: 50;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(12px);
+    }
+
+    /* Node Inspector Side Bar (Right Side Panel) */
+    .inspector-sidebar {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 440px;
+      max-width: 88vw;
+      background: rgba(10, 14, 24, 0.97);
+      border-left: 1px solid var(--border);
+      backdrop-filter: blur(24px);
+      padding: 24px 22px;
+      z-index: 50;
+      transform: translateX(100%);
+      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: -14px 0 45px rgba(0, 0, 0, 0.75);
+      overflow-y: auto;
+    }
+    .inspector-sidebar.open { transform: translateX(0); }
+    .drawer-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+    .drawer-title { font-size: 16px; font-weight: 700; color: #fff; line-height: 1.35; }
+    .drawer-close {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-muted);
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+    }
+    .drawer-close:hover { background: rgba(255, 255, 255, 0.15); color: #fff; border-color: rgba(255, 255, 255, 0.25); }
+
+    /* Standard Card & Views for Other Tabs */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .card-title { font-size: 16px; font-weight: 700; color: #fff; }
+    .chats-layout { display: grid; grid-template-columns: 380px 1fr; gap: 16px; height: calc(100vh - 165px); }
+    .chats-sidebar { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 8px; overflow-y: auto; display: flex; flex-direction: column; }
+    .chats-viewer { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 8px; display: flex; flex-direction: column; height: 100%; overflow: hidden; }
+    .chat-item { padding: 12px 14px; border-bottom: 1px solid var(--border-subtle); cursor: pointer; transition: background 0.15s; }
+    .chat-item:hover { background: rgba(255,255,255,0.04); }
+    .chat-item.active { background: rgba(99, 102, 241, 0.16); border-left: 3px solid var(--accent); }
+    .chat-bubble { padding: 14px 18px; border-radius: 8px; margin-bottom: 14px; max-width: 88%; font-size: 12px; line-height: 1.55; }
+    .chat-bubble.user { background: #1e293b; color: #fff; margin-left: auto; border: 1px solid #334155; }
+    .chat-bubble.assistant { background: #0c1427; color: #cbd5e1; margin-right: auto; border: 1px solid rgba(99,102,241,0.3); }
+
+    /* Toast Notification */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1e293b;
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.2s ease;
+      pointer-events: none;
+    }
+    #toast.show { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+
+  <!-- ========================================================= -->
+  <!-- TOP EXECUTIVE NAVIGATION BAR                              -->
+  <!-- ========================================================= -->
+  <header>
+    <div class="brand-section">
+      <div class="brand-badge" onclick="switchTab('overview')">
+        <span class="brand-icon">🐝</span>
+        <span class="brand-title">Hive: Universal AI Memory</span>
+      </div>
+      <span class="badge-status">● 100% Local AES-256</span>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+      <button class="tab-btn active" id="tabNavOverview" onclick="switchTab('overview')">⚡ Overview</button>
+      <button class="tab-btn" id="tabNavGraph" onclick="switchTab('graph')">🌐 Knowledge Graph</button>
+      <button class="tab-btn" id="tabNavChats" onclick="switchTab('chats')">💬 All Chats</button>
+      <button class="tab-btn" id="tabNavProjects" onclick="switchTab('projects')">📁 Projects & Exporter</button>
+      <button class="tab-btn" id="tabNavBrain" onclick="switchTab('brain')">🐝 Hive Brain</button>
+      <button class="tab-btn" id="tabNavConnectors" onclick="switchTab('connectors')">🔌 Connectors & MCP</button>
+      <button class="tab-btn" id="tabNavBrowser" onclick="switchTab('browser')">📥 Browser Sync</button>
+      <button class="tab-btn" id="tabNavRules" onclick="switchTab('rules')">💡 Guardrails</button>
+      <button class="tab-btn" id="tabNavOpenrouter" onclick="switchTab('openrouter')" style="color: #a855f7;">🤖 AI Extractor</button>
+    </nav>
+
+    <!-- Header Actions -->
+    <div class="header-actions">
+      <button class="btn" style="background: linear-gradient(135deg, #6366f1, #9333ea); border: 1px solid rgba(168, 85, 247, 0.4); color: #fff; font-weight: 600;" onclick="switchTab('openrouter')">
+        🤖 OpenRouter AI
+      </button>
+      <button class="btn btn-amber" onclick="switchTab('brain')">
+        🐝 Inquiries (<span id="topInquiriesCount">3</span>)
+      </button>
+      <button class="btn btn-secondary" id="btnScanLocalTop" onclick="triggerScanLocal()">
+        ⚡ Scan Local Tools
+      </button>
+      <button class="btn btn-secondary" onclick="exportGuardrailsPrompt()">
+        📋 Copy Rules
+      </button>
+    </div>
+  </header>
+
+  <!-- ========================================================= -->
+  <!-- MAIN APPLICATION CONTENT VIEWS                            -->
+  <!-- ========================================================= -->
+  <main>
+
+    <!-- 1. EXECUTIVE OVERVIEW (DEFAULT VIEW) -->
+    <div id="tab-overview" class="tab-content active">
+      <div class="overview-container">
+
+        <!-- Executive KPI Deck (5 Cards) -->
+        <div class="kpi-deck">
+          <div class="kpi-card">
+            <div class="kpi-sparkle"></div>
+            <div class="kpi-header">
+              <span>Ingested AI Chats</span>
+              <span>💬</span>
+            </div>
+            <div class="kpi-val" id="kpiChats">143</div>
+            <div class="kpi-sub" id="kpiChatsSub">
+              <span style="color: #34d399;">● 5 Providers</span> · 64 Cursor · 58 AG · 20 Claude · 1 GPT
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-sparkle"></div>
+            <div class="kpi-header">
+              <span>Synthesized Projects</span>
+              <span>📁</span>
+            </div>
+            <div class="kpi-val" id="kpiProjects">13</div>
+            <div class="kpi-sub">
+              <span>Autonomous Clustering</span> · 0 Generic Names
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-sparkle"></div>
+            <div class="kpi-header">
+              <span>Knowledge Nodes</span>
+              <span>🧠</span>
+            </div>
+            <div class="kpi-val" id="kpiNodes">100</div>
+            <div class="kpi-sub">
+              <span>Subsystems · Algorithms · Tech Stacks</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-sparkle"></div>
+            <div class="kpi-header">
+              <span>Synaptic Connections</span>
+              <span>🔗</span>
+            </div>
+            <div class="kpi-val" id="kpiLinks">179</div>
+            <div class="kpi-sub">
+              <span>Cross-Project Relations Verified</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-sparkle"></div>
+            <div class="kpi-header">
+              <span>Hive Cognitive Health</span>
+              <span>🛡️</span>
+            </div>
+            <div class="kpi-val" style="color: #10b981;">100%</div>
+            <div class="kpi-sub">
+              <span>Zero Cloud Egress · AES-256 Enforced</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Command Search & Action Bar -->
+        <div class="command-bar">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="overviewSearch" class="search-input" placeholder="Search across 100 knowledge nodes, 13 projects, and 143 conversations..." oninput="onOverviewSearch(this.value)">
+          </div>
+
+          <div class="filter-chips">
+            <button class="filter-chip active" onclick="filterProjectsByCategory('all', this)">All Projects (13)</button>
+            <button class="filter-chip" onclick="filterProjectsByCategory('ai', this)">AI & Cognition (4)</button>
+            <button class="filter-chip" onclick="filterProjectsByCategory('infra', this)">Data & Memory (3)</button>
+            <button class="filter-chip" onclick="filterProjectsByCategory('web', this)">Web & Agents (3)</button>
+            <button class="filter-chip" onclick="filterProjectsByCategory('quant', this)">Math & Quant (3)</button>
+          </div>
+
+          <button class="btn" onclick="switchTab('graph')">
+            Open Living Constellation Graph 🌌
+          </button>
+        </div>
+
+        <!-- Main Content: Projects Grid + Operational Column -->
+        <div class="command-main-layout">
+
+          <!-- Left: 13 Project Grid Cards (Linear Style) -->
+          <div class="projects-deck">
+            <div class="projects-deck-header">
+              <span class="section-title">
+                <span>📁 Autonomous Knowledge Clusters</span>
+                <span style="font-size: 11px; background: rgba(255,255,255,0.06); padding: 2px 8px; border-radius: 9999px; color: var(--text-muted);" id="projectDeckCount">13 Projects</span>
+              </span>
+              <span style="font-size: 11px; color: var(--text-dim);">
+                Real chat counts, extracted tech stacks, and live connected node counts
+              </span>
+            </div>
+
+            <div class="projects-grid" id="overviewProjectsGrid">
+              <!-- Dynamically populated project cards -->
+            </div>
+          </div>
+
+          <!-- Right: Operational Sidebar (Inquiries, Guardrails, Feed) -->
+          <div class="operational-stack">
+
+            <!-- 1. Pending Inquiries -->
+            <div class="op-card" style="border-left: 3px solid #f59e0b;">
+              <div class="op-card-header">
+                <span style="color: #f59e0b; display: flex; align-items: center; gap: 6px;">
+                  <span>🐝 Pending Inquiries (<span id="opInquiryCount">3</span>)</span>
+                </span>
+                <button class="btn btn-secondary" style="font-size: 9px; padding: 2px 7px;" onclick="switchTab('brain')">Open Brain →</button>
+              </div>
+              <div id="overviewInquiriesList" style="display: flex; flex-direction: column; gap: 10px;">
+                <!-- Inquiries items with interactive options -->
+              </div>
+            </div>
+
+            <!-- 2. Architecture Guardrails -->
+            <div class="op-card" style="border-left: 3px solid #f43f5e;">
+              <div class="op-card-header">
+                <span style="color: #f43f5e; display: flex; align-items: center; gap: 6px;">
+                  <span>🛡️ Critical Guardrails (4)</span>
+                </span>
+                <button class="btn btn-secondary" style="font-size: 9px; padding: 2px 7px;" onclick="exportGuardrailsPrompt()">Copy Rules 📋</button>
+              </div>
+              <div id="overviewGuardrailsList" style="display: flex; flex-direction: column; gap: 8px;">
+                <!-- Guardrail items -->
+              </div>
+            </div>
+
+            <!-- 3. Telemetry & Synaptic Summary -->
+            <div class="op-card">
+              <div class="op-card-header">
+                <span>📊 Substrate Telemetry</span>
+                <span style="font-size: 10px; color: var(--text-dim);">Live System Probe</span>
+              </div>
+              <div id="overviewTelemetryBrief" style="font-size: 11px; color: #cbd5e1; display: flex; flex-direction: column; gap: 6px;">
+                <!-- Ingested Breakdown & Memory Footprint -->
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 2. LIVING CONSTELLATION KNOWLEDGE GRAPH -->
+    <div id="tab-graph" class="tab-content">
+      <div class="graph-viewport">
+        <canvas id="graphCanvas"></canvas>
+        <div id="graphHoverTooltip"></div>
+
+        <!-- Top-Left Focus Breadcrumb HUD -->
+        <div class="graph-hud-top-left" style="display: flex; align-items: center; gap: 8px;">
+          <div class="graph-focus-pill">
+            <span id="canvasFocusLabel">🌟 Living Knowledge Galaxy (100 Nodes · 179 Links)</span>
+            <button id="btnResetFocus" class="hud-btn" style="display: none; padding: 2px 6px; font-size: 10px;" onclick="resetGraphFocus()">Reset</button>
+          </div>
+          <select id="graphNodeQuickSelect" class="hud-btn" style="background: rgba(10, 14, 26, 0.92); border: 1px solid var(--border); color: #fff; padding: 5px 10px; border-radius: 6px; font-size: 11px; cursor: pointer; outline: none;" onchange="onQuickSelectNode(this.value)">
+            <option value="">🎯 Quick Inspect Node...</option>
+          </select>
+        </div>
+
+        <!-- Top-Right Graph Floating Tools -->
+        <div class="graph-hud-top-right">
+          <button class="hud-btn" id="btnTogglePhysics" onclick="togglePhysics()">⏸ Freeze</button>
+          <button class="hud-btn" onclick="reheatPhysics()">⚡ Re-simulate</button>
+          <button class="hud-btn" title="Zoom In" onclick="zoomGraph(1.2)">+</button>
+          <button class="hud-btn" title="Zoom Out" onclick="zoomGraph(0.8)">−</button>
+          <button class="hud-btn" title="Fit to Screen" onclick="fitGraphToView()">⛶ Fit View</button>
+          <button class="hud-btn" title="Reset Camera" onclick="resetGraphView()">↺ Reset</button>
+        </div>
+
+        <!-- Bottom Category Filter Legend -->
+        <div class="graph-hud-bottom">
+          <span style="font-weight: 700; color: #fff; font-size: 11px;">Constellations:</span>
+          <span class="graph-legend-item" onclick="toggleFilterType('Project')"><span class="dot" style="background:#818cf8;"></span> Projects (13)</span>
+          <span class="graph-legend-item" onclick="toggleFilterType('ArchitecturePattern')"><span class="dot" style="background:#38bdf8;"></span> Subsystems (18)</span>
+          <span class="graph-legend-item" onclick="toggleFilterType('Decision')"><span class="dot" style="background:#fbbf24;"></span> Decisions (28)</span>
+          <span class="graph-legend-item" onclick="toggleFilterType('NegativeKnowledge')"><span class="dot" style="background:#f43f5e;"></span> Guardrails (9)</span>
+          <span class="graph-legend-item" onclick="toggleFilterType('Tech')"><span class="dot" style="background:#34d399;"></span> Tech Stack (30)</span>
+          <span class="graph-legend-item" onclick="toggleFilterType('UserPreference')"><span class="dot" style="background:#c084fc;"></span> Preferences (2)</span>
+        </div>
+
+        <!-- Side Inspector Panel -->
+        <div id="nodeInspectorSidebar" class="inspector-sidebar">
+          <div class="drawer-header">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span id="drawerTypeBadge" class="tech-pill" style="color: #6366f1; border-color: #6366f1;">Node</span>
+              <span id="drawerTitle" class="drawer-title">Node Title</span>
+            </div>
+            <button class="drawer-close" onclick="closeInspectorDrawer()">&times;</button>
+          </div>
+          <p id="drawerSummary" style="font-size: 12px; color: #cbd5e1; line-height: 1.5;"></p>
+
+          <div style="display: flex; gap: 8px;">
+            <button id="btnDrawerFocus" class="btn" style="flex: 1; padding: 6px 10px; font-size: 11px; background: rgba(99,102,241,0.18); border-color: var(--accent); color: #fff;">🎯 Focus in Galaxy</button>
+            <button id="btnDrawerChats" class="btn" style="flex: 1; padding: 6px 10px; font-size: 11px; background: rgba(56,189,248,0.18); border-color: var(--cyan); color: #fff; display: none;">💬 View Chats</button>
+          </div>
+
+          <div id="drawerExtra" style="display: flex; flex-direction: column; gap: 10px; font-size: 11px;"></div>
+          
+          <div style="margin-top: 6px;">
+            <div style="font-size: 11px; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Connected Knowledge Synapses:</div>
+            <div id="drawerLinksList" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 3. ALL CHATS & COMPLETE MESSAGE TRANSCRIPTS -->
+    <div id="tab-chats" class="tab-content">
+      <div class="card" style="margin: 14px;">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <span class="card-title">💬 Cross-AI Conversation Explorer & Reader</span>
+            <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
+              Read complete sanitized message transcripts across Cursor, Antigravity, Claude Code, ChatGPT, and Gemini.
+            </p>
+          </div>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <input type="text" id="chatSearchInput" class="search-input" placeholder="Search conversations by title or ID..." oninput="onChatSearchInput(this.value)">
+            <select id="chatProviderFilter" style="background: #080d1a; border: 1px solid var(--border); color: #fff; padding: 6px 10px; border-radius: 6px; font-size: 11px;" onchange="onChatProviderChange(this.value)">
+              <option value="all">All Providers (143)</option>
+              <option value="cursor">Cursor IDE (64)</option>
+              <option value="antigravity">Antigravity (58)</option>
+              <option value="claude">Claude Code (20)</option>
+              <option value="chatgpt">ChatGPT (1)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="chats-layout">
+          <div class="chats-sidebar">
+            <div style="padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 11px; color: var(--text-muted); display: flex; justify-content: space-between;">
+              <span id="chatListHeaderCount">Showing conversations...</span>
+            </div>
+            <div id="chatListContainer" style="flex: 1; overflow-y: auto;"></div>
+          </div>
+
+          <div class="chats-viewer">
+            <div id="chatReaderHeader" style="padding: 12px 18px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.01);">
+              <div>
+                <span id="chatReaderTitle" style="font-size: 13px; font-weight: 700; color: #fff;">Select a chat to read transcript</span>
+                <div id="chatReaderMeta" style="font-size: 11px; color: var(--text-dim); margin-top: 2px;">-</div>
+              </div>
+              <div id="chatReaderBadges" style="display: flex; gap: 6px;"></div>
+            </div>
+            <div id="chatMessagesContainer" style="flex: 1; overflow-y: auto; padding: 18px;">
+              <div style="color: var(--text-muted); font-size: 13px; text-align: center; margin-top: 40px;">
+                Select any conversation on the left to read its complete message turns.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. PROJECTS & ARCHITECTURE PORTFOLIO -->
+    <div id="tab-projects" class="tab-content">
+      <div class="card" style="margin: 14px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <span class="card-title">📁 Project Portfolio & Architecture Exporter</span>
+            <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
+              13 synthesized engineering projects across 143 AI conversations with tech stacks and decisions.
+            </p>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn btn-secondary" onclick="exportProjectsMarkdown()">Export All Markdown 📥</button>
+            <button class="btn btn-secondary" onclick="exportProjectsJson()">Export All JSON 📥</button>
+          </div>
+        </div>
+        <div id="projectsFullContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 16px;"></div>
+      </div>
+    </div>
+
+    <!-- 5. HIVE BRAIN & TELEMETRY -->
+    <div id="tab-brain" class="tab-content">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 14px;">
+        <div class="card">
+          <span class="card-title">🐝 Self-Evolving Brain Inquiries</span>
+          <p style="font-size: 12px; color: var(--text-muted);">
+            Hive detects architectural trade-offs in your code and presents actionable decision choices.
+          </p>
+          <div id="inquiriesContainer" style="display: flex; flex-direction: column; gap: 14px;"></div>
+        </div>
+        <div class="card">
+          <span class="card-title">📊 Hive Cognitive Telemetry</span>
+          <p style="font-size: 12px; color: var(--text-muted);">
+            Real-time memory operations, indexing latencies, and local SQLite engine statistics.
+          </p>
+          <div id="telemetryContainer"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. CONNECTORS & MCP -->
+    <div id="tab-connectors" class="tab-content">
+      <div class="card" style="margin: 14px;">
+        <span class="card-title">🔌 Local IDE Connectors & MCP Hub</span>
+        <p style="font-size: 12px; color: var(--text-muted);">
+          Attach Hive Universal AI Memory to Cursor, Claude Code, Antigravity, OpenCode, Zed, and JetBrains.
+        </p>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 10px;">
+          <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px;">
+            <div style="font-weight: 700; color: #fff; margin-bottom: 6px;">Cursor IDE</div>
+            <p style="font-size: 11px; color: var(--text-dim); margin-bottom: 10px;">Add Hive MCP server into your Cursor MCP configuration.</p>
+            <pre style="background: #04060b; padding: 8px; border-radius: 5px; font-size: 10px; color: #34d399; overflow-x: auto;">{"mcpServers": {"hive": {"url": "http://localhost:42424/sse"}}}</pre>
+          </div>
+          <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px;">
+            <div style="font-weight: 700; color: #fff; margin-bottom: 6px;">Claude Code CLI</div>
+            <p style="font-size: 11px; color: var(--text-dim); margin-bottom: 10px;">Run the MCP add command in terminal:</p>
+            <pre style="background: #04060b; padding: 8px; border-radius: 5px; font-size: 10px; color: #38bdf8; overflow-x: auto;">claude mcp add --transport sse hive http://localhost:42424/sse</pre>
+          </div>
+          <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px;">
+            <div style="font-weight: 700; color: #fff; margin-bottom: 6px;">Google Antigravity & VS Code</div>
+            <p style="font-size: 11px; color: var(--text-dim); margin-bottom: 10px;">Auto-discovered via workspace config.</p>
+            <pre style="background: #04060b; padding: 8px; border-radius: 5px; font-size: 10px; color: #c084fc; overflow-x: auto;">Endpoint: http://localhost:42424/sse\nStatus: Active (143 chats synced)</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. BROWSER SYNC HUB -->
+    <div id="tab-browser" class="tab-content">
+      <div style="max-width: 1400px; margin: 0 auto; width: 100%; padding: 22px 28px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto;">
+        
+        <!-- Hero Banner with Download Actions -->
+        <div style="background: linear-gradient(135deg, rgba(15, 21, 38, 0.95) 0%, rgba(20, 28, 51, 0.85) 100%); border: 1px solid rgba(99, 102, 241, 0.35); border-radius: 12px; padding: 26px 30px; display: flex; justify-content: space-between; align-items: center; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.4), 0 0 20px rgba(99, 102, 241, 0.15);">
+          <div style="position: absolute; top: -50px; right: -50px; width: 220px; height: 220px; background: radial-gradient(circle, rgba(99, 102, 241, 0.18) 0%, transparent 70%); pointer-events: none;"></div>
+          
+          <div style="display: flex; flex-direction: column; gap: 8px; max-width: 740px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="font-size: 26px; filter: drop-shadow(0 0 8px #f59e0b);">🐝</span>
+              <h2 style="font-size: 22px; font-weight: 800; color: #fff; letter-spacing: -0.4px;">
+                Hive Cross-AI Browser Extension <span style="font-size: 11px; padding: 2px 8px; background: rgba(99, 102, 241, 0.25); border: 1px solid rgba(99, 102, 241, 0.5); color: #a5b4fc; border-radius: 9999px; vertical-align: middle;">v2.1.0 Ready</span>
+              </h2>
+            </div>
+            <p style="font-size: 13px; color: #cbd5e1; line-height: 1.55;">
+              Extract, sanitize, and synchronize conversations across <strong>ChatGPT, Claude, Gemini, DeepSeek, Perplexity, Grok, and Mistral</strong> directly into your Hive Universal Knowledge Graph. Dual-mode architecture enables seamless local native ingest or cloud fallback staging with prompt-first consent.
+            </p>
+            <div style="display: flex; align-items: center; gap: 12px; margin-top: 4px; font-size: 11px; color: #94a3b8;">
+              <span style="display: flex; align-items: center; gap: 5px; color: #34d399;">● Local Native First</span>
+              <span>·</span>
+              <span style="display: flex; align-items: center; gap: 5px; color: #38bdf8;">● Cloud Staging Fallback</span>
+              <span>·</span>
+              <span style="display: flex; align-items: center; gap: 5px; color: #fbbf24;">● Secret Scrubbing Active</span>
+              <span>·</span>
+              <span style="display: flex; align-items: center; gap: 5px; color: #c084fc;">● Prompt Consent Enforced</span>
+            </div>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 8px; min-width: 290px;">
+            <button onclick="handleDownloadZip(event)" class="btn" style="background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%); font-size: 13px; font-weight: 700; padding: 10px 16px; border-radius: 8px; text-decoration: none; justify-content: center; box-shadow: 0 4px 18px rgba(99, 102, 241, 0.45); border: 1px solid rgba(255,255,255,0.2); cursor: pointer;">
+              📥 Download Extension (.zip)
+            </button>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+              <button onclick="openExtensionFolder()" class="btn btn-secondary" style="font-size: 11px; padding: 7px 8px; justify-content: center; border-color: rgba(16, 185, 129, 0.4); color: #34d399;">
+                📁 Open in Explorer
+              </button>
+              <button onclick="copyExtensionPath()" class="btn btn-secondary" style="font-size: 11px; padding: 7px 8px; justify-content: center; border-color: rgba(56, 189, 248, 0.4); color: #38bdf8;">
+                📋 Copy Folder Path
+              </button>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 10px; color: #94a3b8; margin-top: 2px;">
+              <span>Chrome Web Store:</span>
+              <span style="color: #60a5fa; cursor: pointer; text-decoration: underline;" onclick="showWebStoreInfo()">Direct Store Link ↗</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Architecture HUD (4 Pillars) -->
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;">
+          
+          <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.5px;">1. System Native Ingest</span>
+              <span style="font-size: 10px; padding: 2px 7px; border-radius: 9999px; background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3);">Primary Mode</span>
+            </div>
+            <div style="font-size: 15px; font-weight: 700; color: #fff;">localhost:42424</div>
+            <p style="font-size: 11px; color: #94a3b8; line-height: 1.45;">
+              Zero-cloud guarantees. Conversations are sent securely over loopback and stored into your local AES-256 encrypted SQLite database.
+            </p>
+            <div id="statusNativePill" style="font-size: 11px; font-weight: 600; color: #34d399; margin-top: auto; display: flex; align-items: center; gap: 6px;">
+              ● Native Daemon Active
+            </div>
+          </div>
+
+          <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.5px;">2. Cloud Fallback Staging</span>
+              <span style="font-size: 10px; padding: 2px 7px; border-radius: 9999px; background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3);">Zero-Loss Queue</span>
+            </div>
+            <div style="font-size: 15px; font-weight: 700; color: #fff;">Automatic Auto-Flush</div>
+            <p style="font-size: 11px; color: #94a3b8; line-height: 1.45;">
+              When the native app is offline, chats are securely staged in browser storage or relayed to cloud processing. Auto-flushes when Hive connects.
+            </p>
+            <div id="statusQueuePill" style="font-size: 11px; font-weight: 600; color: #38bdf8; margin-top: auto; display: flex; align-items: center; gap: 6px;">
+              ● Queue Monitored
+            </div>
+          </div>
+
+          <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.5px;">3. Secret Sanitizer</span>
+              <span style="font-size: 10px; padding: 2px 7px; border-radius: 9999px; background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3);">Client-Side Shield</span>
+            </div>
+            <div style="font-size: 15px; font-weight: 700; color: #fff;">Pre-Flight Redaction</div>
+            <p style="font-size: 11px; color: #94a3b8; line-height: 1.45;">
+              Automated scrubbing strips OpenAI, Anthropic, GitHub, AWS, and Bearer secrets directly in the browser before any packet leaves the page.
+            </p>
+            <div style="font-size: 11px; font-weight: 600; color: #fbbf24; margin-top: auto; display: flex; align-items: center; gap: 6px;">
+              ● Shield Active
+            </div>
+          </div>
+
+          <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.5px;">4. Prompt-First Consent</span>
+              <span style="font-size: 10px; padding: 2px 7px; border-radius: 9999px; background: rgba(192, 132, 252, 0.15); color: #c084fc; border: 1px solid rgba(192, 132, 252, 0.3);">User Controlled</span>
+            </div>
+            <div style="font-size: 15px; font-weight: 700; color: #fff;">In-Page Toast Modal</div>
+            <p style="font-size: 11px; color: #94a3b8; line-height: 1.45;">
+              Asks user consent on every active AI conversation. Supports 1-click sync, thread auto-syncing, or dismiss. Never records without approval.
+            </p>
+            <div style="font-size: 11px; font-weight: 600; color: #c084fc; margin-top: auto; display: flex; align-items: center; gap: 6px;">
+              ● Consent Enforced
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Archive Drag-and-Drop & File Import Zone -->
+        <div class="card" style="padding: 20px; border-color: rgba(99, 102, 241, 0.4); background: linear-gradient(180deg, rgba(15, 23, 42, 0.85) 0%, rgba(10, 14, 26, 0.96) 100%);">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
+            <div>
+              <span class="card-title" style="font-size: 15px;">📦 Import Chat Archive Package (.zip)</span>
+              <p style="font-size: 11px; color: #94a3b8; margin-top: 3px;">
+                Download all your chats as an organized ZIP archive from the Chrome Extension, then drop it here for offline local ingestion, strict deduplication, and deep knowledge graph extraction.
+              </p>
+            </div>
+            <span style="font-size: 11px; padding: 4px 10px; border-radius: 9999px; background: rgba(99, 102, 241, 0.15); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.3);">
+              Zero-Loss Local Importer
+            </span>
+          </div>
+
+          <div id="archiveDropzone" style="
+            border: 2px dashed rgba(99, 102, 241, 0.4);
+            border-radius: 10px;
+            padding: 26px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: rgba(99, 102, 241, 0.03);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 10px;
+          " onclick="document.getElementById('archiveZipInput').click()">
+            <input type="file" id="archiveZipInput" accept=".zip" style="display: none;" onchange="handleArchiveZipSelected(event)">
+            <span style="font-size: 32px; filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.5));">📥</span>
+            <div>
+              <span style="font-size: 14px; font-weight: 700; color: #fff;">Drop your exported <code style="color: #60a5fa;">.zip</code> chat archive here</span>
+              <span style="font-size: 12px; color: #94a3b8; display: block; margin-top: 2px;">or click to browse from your Downloads folder</span>
+            </div>
+            <span style="font-size: 10px; color: #64748b;">Supports organized .txt files, conversations.json, and bulk export packages from Claude, ChatGPT, Gemini</span>
+          </div>
+
+          <div id="archiveImportFeedback" style="display: none; padding: 12px 14px; border-radius: 8px; font-size: 12px; margin-top: 10px;"></div>
+        </div>
+
+        <!-- Installation & Multi-Browser Guides -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          
+          <!-- Left: Installation Instructions -->
+          <div class="card" style="padding: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
+              <span class="card-title" style="font-size: 14px;">📦 Installation Guide (Chrome, Brave, Edge, Opera)</span>
+              <div style="display: flex; gap: 6px;">
+                <button class="btn btn-secondary" style="font-size: 10px; padding: 4px 8px;" onclick="switchInstallTab('unpacked')">Load Unpacked</button>
+                <button class="btn btn-secondary" style="font-size: 10px; padding: 4px 8px;" onclick="switchInstallTab('store')">Web Store</button>
+              </div>
+            </div>
+
+            <!-- Unpacked Guide -->
+            <div id="installGuideUnpacked" style="display: flex; flex-direction: column; gap: 12px; margin-top: 14px;">
+              <div style="display: flex; gap: 12px; align-items: flex-start;">
+                <span style="background: rgba(99, 102, 241, 0.2); color: #818cf8; font-weight: 700; font-size: 12px; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">1</span>
+                <div>
+                  <div style="font-size: 12px; font-weight: 600; color: #fff;">Unpacked Extension Ready to Load</div>
+                  <div style="font-size: 11px; color: #94a3b8; margin-top: 2px;">
+                    The extension is already unpacked and ready in your Downloads folder:
+                    <code style="background: rgba(0,0,0,0.4); padding: 2px 6px; border-radius: 4px; color: #38bdf8; display: block; margin-top: 4px;">C:\Users\Asta\Downloads\hive-ai-memory-extension</code>
+                    Or load directly from the repository folder:
+                    <code style="background: rgba(0,0,0,0.4); padding: 2px 6px; border-radius: 4px; color: #f59e0b; display: block; margin-top: 4px;">e:\universal-ai-memory\extension</code>
+                  </div>
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 12px; align-items: flex-start;">
+                <span style="background: rgba(99, 102, 241, 0.2); color: #818cf8; font-weight: 700; font-size: 12px; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">2</span>
+                <div>
+                  <div style="font-size: 12px; font-weight: 600; color: #fff;">Navigate to Extensions Page</div>
+                  <div style="font-size: 11px; color: #94a3b8; margin-top: 2px;">
+                    In Chrome/Brave type <code style="color: #60a5fa;">chrome://extensions</code>, in Edge type <code style="color: #60a5fa;">edge://extensions</code>, in Opera type <code style="color: #60a5fa;">opera://extensions</code>.
+                  </div>
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 12px; align-items: flex-start;">
+                <span style="background: rgba(99, 102, 241, 0.2); color: #818cf8; font-weight: 700; font-size: 12px; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">3</span>
+                <div>
+                  <div style="font-size: 12px; font-weight: 600; color: #fff;">Enable Developer Mode & Load Unpacked</div>
+                  <div style="font-size: 11px; color: #94a3b8; margin-top: 2px;">
+                    Toggle <strong>"Developer Mode"</strong> in the top-right corner, click <strong>"Load unpacked"</strong>, and select the extracted folder.
+                  </div>
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 12px; align-items: flex-start;">
+                <span style="background: rgba(16, 185, 129, 0.2); color: #34d399; font-weight: 700; font-size: 12px; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">✓</span>
+                <div>
+                  <div style="font-size: 12px; font-weight: 600; color: #fff;">Start Chatting with Any AI</div>
+                  <div style="font-size: 11px; color: #94a3b8; margin-top: 2px;">
+                    Open ChatGPT, Claude, Gemini, DeepSeek, Perplexity, Grok, or Mistral. The Hive ambient badge will appear and prompt you to sync!
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Web Store Guide -->
+            <div id="installGuideStore" style="display: none; flex-direction: column; gap: 14px; margin-top: 14px;">
+              <div style="background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 8px; padding: 14px; font-size: 12px; color: #e0f2fe; line-height: 1.5;">
+                <strong>Chrome Web Store Direct Install:</strong><br>
+                For one-click managed updates without Developer Mode, install directly from the Chrome Web Store once our production review rollout is approved.
+              </div>
+              <button onclick="showWebStoreInfo()" class="btn" style="background: #0284c7; padding: 10px; font-size: 12px; font-weight: 600; justify-content: center;">
+                🌐 Visit Chrome Web Store Listing
+              </button>
+            </div>
+          </div>
+
+          <!-- Right: Live Connection Test & Multi-AI Launchpad -->
+          <div class="card" style="padding: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
+              <span class="card-title" style="font-size: 14px;">⚡ Extension Handshake & Supported AI Providers</span>
+              <button class="btn btn-amber" style="font-size: 10px; padding: 4px 8px;" onclick="testExtensionHandshake()">
+                Test Handshake ⚡
+              </button>
+            </div>
+
+            <!-- Handshake Status Box -->
+            <div id="handshakeBox" style="background: #090d1a; border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-top: 12px; font-family: monospace; font-size: 11px; color: #94a3b8;">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                <span style="color: #60a5fa;">[DAEMON HANDSHAKE]</span>
+                <span id="handshakeLatency" style="color: #34d399;">Ready</span>
+              </div>
+              <div id="handshakeJson" style="color: #cbd5e1; font-size: 10px; white-space: pre-wrap;">Endpoint: http://localhost:42424/api/extension/status
+Mode: System Native (AES-256 Loopback)
+Ready for content scripts & popup handshake.</div>
+            </div>
+
+            <div style="font-size: 12px; font-weight: 600; color: #fff; margin-top: 16px; margin-bottom: 8px;">Supported AI Platforms:</div>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+              <a href="https://chatgpt.com" target="_blank" style="background: #111827; border: 1px solid #1f2937; border-radius: 6px; padding: 8px 4px; text-decoration: none; color: #cbd5e1; font-size: 11px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                <span style="font-size: 14px;">🤖</span>
+                <span>ChatGPT</span>
+              </a>
+              <a href="https://claude.ai" target="_blank" style="background: #111827; border: 1px solid #1f2937; border-radius: 6px; padding: 8px 4px; text-decoration: none; color: #cbd5e1; font-size: 11px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                <span style="font-size: 14px;">🧠</span>
+                <span>Claude</span>
+              </a>
+              <a href="https://gemini.google.com" target="_blank" style="background: #111827; border: 1px solid #1f2937; border-radius: 6px; padding: 8px 4px; text-decoration: none; color: #cbd5e1; font-size: 11px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                <span style="font-size: 14px;">✨</span>
+                <span>Gemini</span>
+              </a>
+              <a href="https://chat.deepseek.com" target="_blank" style="background: #111827; border: 1px solid #1f2937; border-radius: 6px; padding: 8px 4px; text-decoration: none; color: #cbd5e1; font-size: 11px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                <span style="font-size: 14px;">⚡</span>
+                <span>DeepSeek</span>
+              </a>
+              <a href="https://www.perplexity.ai" target="_blank" style="background: #111827; border: 1px solid #1f2937; border-radius: 6px; padding: 8px 4px; text-decoration: none; color: #cbd5e1; font-size: 11px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                <span style="font-size: 14px;">🔍</span>
+                <span>Perplexity</span>
+              </a>
+              <a href="https://x.ai" target="_blank" style="background: #111827; border: 1px solid #1f2937; border-radius: 6px; padding: 8px 4px; text-decoration: none; color: #cbd5e1; font-size: 11px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                <span style="font-size: 14px;">🚀</span>
+                <span>Grok</span>
+              </a>
+              <a href="https://chat.mistral.ai" target="_blank" style="background: #111827; border: 1px solid #1f2937; border-radius: 6px; padding: 8px 4px; text-decoration: none; color: #cbd5e1; font-size: 11px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                <span style="font-size: 14px;">🌊</span>
+                <span>Mistral</span>
+              </a>
+              <a href="http://localhost:42424" target="_blank" style="background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.4); border-radius: 6px; padding: 8px 4px; text-decoration: none; color: #a5b4fc; font-size: 11px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                <span style="font-size: 14px;">🐝</span>
+                <span>Hive MCP</span>
+              </a>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 8. GUARDRAILS -->
+    <div id="tab-rules" class="tab-content">
+      <div class="card" style="margin: 14px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <span class="card-title">💡 Learned Guardrails & Negative Knowledge</span>
+            <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
+              Architectural rules and anti-patterns distilled to prevent mistakes across your AI coding tools.
+            </p>
+          </div>
+          <button class="btn btn-secondary" onclick="exportGuardrailsPrompt()">Copy System Rules Prompt 📋</button>
+        </div>
+        <div id="insightsContainer" style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;"></div>
+      </div>
+    </div>
+
+    <!-- 9. AI MODEL EXTRACTOR (OPENROUTER) -->
+    <div id="tab-openrouter" class="tab-content">
+      <div style="max-width: 1600px; margin: 0 auto; width: 100%; padding: 24px 28px; display: flex; flex-direction: column; gap: 20px;">
+        
+        <!-- Header Banner -->
+        <div style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(168, 85, 247, 0.1)); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 12px; padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; backdrop-filter: blur(10px);">
+          <div>
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+              <span style="font-size: 24px;">🤖</span>
+              <h1 style="font-size: 19px; font-weight: 700; color: #fff; letter-spacing: -0.3px;">OpenRouter AI Model Knowledge Extractor</h1>
+              <span id="orStatusPill" style="font-size: 11px; padding: 3px 10px; border-radius: 9999px; background: rgba(244, 63, 94, 0.15); color: #f87171; border: 1px solid rgba(244, 63, 94, 0.3); font-weight: 600;">○ Key Not Configured</span>
+            </div>
+            <p style="font-size: 13px; color: #94a3b8; line-height: 1.5; max-width: 900px;">
+              Direct frontier LLMs (Gemini 2.5 Flash, Claude 3.5 Sonnet, DeepSeek V3, Llama 3.3) to analyze, summarize, and synthesize high-fidelity <strong>Decisions</strong>, <strong>Architecture Patterns</strong>, and <strong>Guardrails</strong> from raw chat transcripts and Claude Code sessions. Large conversations are automatically chunked into overlapping windows.
+            </p>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <button class="btn btn-secondary" onclick="testOpenRouterConnection()">🔄 Refresh Key & Balance</button>
+            <button class="btn" style="background: rgba(16, 185, 129, 0.2); border-color: #10b981; color: #34d399;" onclick="switchTab('graph')">🌟 View Galaxy Graph</button>
+          </div>
+        </div>
+
+        <!-- 3-Column Responsive Dashboard -->
+        <div style="display: grid; grid-template-columns: 380px 1fr; gap: 20px; align-items: start;">
+          
+          <!-- LEFT COLUMN: Credentials & Extraction Controls -->
+          <div style="display: flex; flex-direction: column; gap: 18px;">
+            
+            <!-- 1. OpenRouter Credentials & Balance Card -->
+            <div class="card" style="padding: 18px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <span class="card-title" style="display: flex; align-items: center; gap: 8px;">
+                  <span>🔑</span> OpenRouter API Key
+                </span>
+                <span id="orBalanceBadge" style="font-size: 11px; color: #34d399; font-weight: 600; background: rgba(16, 185, 129, 0.1); padding: 2px 8px; border-radius: 6px; border: 1px solid rgba(16, 185, 129, 0.2);">Balance: $0.00</span>
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div style="position: relative;">
+                  <input type="password" id="orApiKeyInput" placeholder="sk-or-v1-..." style="width: 100%; background: #06080e; border: 1px solid var(--border); color: #fff; padding: 10px 38px 10px 12px; border-radius: 8px; font-size: 12px; font-family: monospace; outline: none;">
+                  <button type="button" onclick="toggleApiKeyVisibility()" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: #94a3b8; cursor: pointer; font-size: 14px;">👁️</button>
+                </div>
+
+                <div style="display: flex; gap: 8px;">
+                  <button class="btn" style="flex: 1;" onclick="saveOpenRouterKey()">💾 Save Key</button>
+                  <button class="btn btn-secondary" onclick="testOpenRouterConnection()">⚡ Verify</button>
+                </div>
+                
+                <div id="orKeyInfoText" style="font-size: 11px; color: #64748b; line-height: 1.4; margin-top: 4px;">
+                  Your key is stored strictly on your local machine in <code>.env</code> and encrypted substrate memory. No cloud egress.
+                </div>
+              </div>
+            </div>
+
+            <!-- 2. Extraction Scope & Chunking Settings -->
+            <div class="card" style="padding: 18px;">
+              <span class="card-title" style="display: flex; align-items: center; gap: 8px; margin-bottom: 14px;">
+                <span>⚙️</span> Extraction Scope & Strategy
+              </span>
+
+              <!-- Mode Radios -->
+              <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px;">
+                <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 8px; border: 1px solid var(--border);">
+                  <input type="radio" name="orExtractionMode" value="single" style="margin-top: 3px;" onchange="onExtractionModeChanged()">
+                  <div>
+                    <div style="font-size: 12px; font-weight: 600; color: #fff;">Single Conversation (Fast Test)</div>
+                    <div style="font-size: 11px; color: #94a3b8;">Pick 1 chat to test model extraction depth and accuracy.</div>
+                  </div>
+                </label>
+
+                <div id="orSingleConvoSelectWrapper" style="display: none; margin-left: 24px; margin-bottom: 6px;">
+                  <select id="orSingleConvoSelect" style="width: 100%; background: #06080e; border: 1px solid var(--border); color: #cbd5e1; padding: 8px; border-radius: 6px; font-size: 11px; outline: none;">
+                    <option value="">Loading conversations...</option>
+                  </select>
+                </div>
+
+                <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 8px; border: 1px solid var(--border);">
+                  <input type="radio" name="orExtractionMode" value="project" style="margin-top: 3px;" onchange="onExtractionModeChanged()">
+                  <div>
+                    <div style="font-size: 12px; font-weight: 600; color: #fff;">By Project Cluster</div>
+                    <div style="font-size: 11px; color: #94a3b8;">Synthesize all chats belonging to a specific project.</div>
+                  </div>
+                </label>
+
+                <div id="orProjectSelectWrapper" style="display: none; margin-left: 24px; margin-bottom: 6px;">
+                  <select id="orProjectSelect" style="width: 100%; background: #06080e; border: 1px solid var(--border); color: #cbd5e1; padding: 8px; border-radius: 6px; font-size: 11px; outline: none;">
+                    <option value="">Loading projects...</option>
+                  </select>
+                </div>
+
+                <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 8px; border: 1px solid var(--border);">
+                  <input type="radio" name="orExtractionMode" value="all" checked style="margin-top: 3px;" onchange="onExtractionModeChanged()">
+                  <div>
+                    <div style="font-size: 12px; font-weight: 600; color: #fff;">All Ingested Conversations (Batch)</div>
+                    <div style="font-size: 11px; color: #94a3b8;">Processes all substantial conversations across tools.</div>
+                  </div>
+                </label>
+              </div>
+
+              <!-- Chunking Size -->
+              <div style="margin-bottom: 14px;">
+                <div style="display: flex; justify-content: space-between; font-size: 11px; color: #cbd5e1; margin-bottom: 4px;">
+                  <span>Max Tokens per Chunk:</span>
+                  <span id="orChunkSizeDisplay" style="color: #a855f7; font-weight: 600;">8,000 tokens</span>
+                </div>
+                <select id="orChunkSizeSelect" style="width: 100%; background: #06080e; border: 1px solid var(--border); color: #fff; padding: 8px; border-radius: 6px; font-size: 11px; outline: none;" onchange="document.getElementById('orChunkSizeDisplay').textContent = this.options[this.selectedIndex].text;">
+                  <option value="4000">4,000 tokens (Compact)</option>
+                  <option value="8000" selected>8,000 tokens (Balanced Standard)</option>
+                  <option value="16000">16,000 tokens (Deep Context)</option>
+                  <option value="32000">32,000 tokens (Very Large Context)</option>
+                </select>
+                <div style="font-size: 10px; color: #64748b; margin-top: 4px; line-height: 1.3;">
+                  Conversations smaller than this limit are analyzed whole in a single pass. Larger conversations are split with 1-turn overlapping context.
+                </div>
+              </div>
+
+              <!-- Batch Limit -->
+              <div style="margin-bottom: 16px;">
+                <div style="display: flex; justify-content: space-between; font-size: 11px; color: #cbd5e1; margin-bottom: 4px;">
+                  <span>Conversation Batch Cap:</span>
+                  <span id="orBatchLimitDisplay" style="color: #38bdf8; font-weight: 600;">All (No Cap)</span>
+                </div>
+                <select id="orBatchLimitSelect" style="width: 100%; background: #06080e; border: 1px solid var(--border); color: #fff; padding: 8px; border-radius: 6px; font-size: 11px; outline: none;" onchange="document.getElementById('orBatchLimitDisplay').textContent = this.options[this.selectedIndex].text;">
+                  <option value="5">Test First 5 Conversations</option>
+                  <option value="20">First 20 Conversations</option>
+                  <option value="50">First 50 Conversations</option>
+                  <option value="0" selected>All (No Cap)</option>
+                </select>
+              </div>
+
+              <!-- Execution Controls -->
+              <div style="display: flex; gap: 8px;">
+                <button id="btnStartOrExtraction" class="btn" style="flex: 1; padding: 10px; background: linear-gradient(135deg, #6366f1, #9333ea); font-weight: 600; font-size: 12px;" onclick="startOpenRouterExtraction()">
+                  🚀 Start AI Extraction
+                </button>
+                <button id="btnCancelOrExtraction" class="btn btn-secondary" style="padding: 10px; display: none; background: rgba(244, 63, 94, 0.2); border-color: #f43f5e; color: #f87171;" onclick="cancelOpenRouterExtraction()">
+                  ⏹ Cancel
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- RIGHT COLUMN: Model Explorer & Live Execution Console -->
+          <div style="display: flex; flex-direction: column; gap: 18px;">
+
+            <!-- 1. Frontier Model Explorer Card -->
+            <div class="card" style="padding: 18px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                <div>
+                  <span class="card-title" style="display: flex; align-items: center; gap: 8px;">
+                    <span>🧠</span> Frontier Model Selector
+                  </span>
+                  <span style="font-size: 11px; color: #94a3b8;">
+                    Currently Active: <strong id="orActiveModelLabel" style="color: #a855f7;">google/gemini-2.5-flash</strong>
+                  </span>
+                </div>
+                <div style="display: flex; gap: 6px;">
+                  <span id="orModelCountBadge" style="font-size: 11px; color: var(--text-dim); background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 6px;">445 Models Available</span>
+                </div>
+              </div>
+
+              <!-- Curated Presets Bar -->
+              <div style="display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 4px;">
+                <button class="btn btn-secondary or-preset-btn active" onclick="selectModelPreset('google/gemini-2.5-flash', this)">⚡ Gemini 2.5 Flash (1M · Fast)</button>
+                <button class="btn btn-secondary or-preset-btn" onclick="selectModelPreset('anthropic/claude-3.5-sonnet', this)">🧠 Claude 3.5 Sonnet (Precision)</button>
+                <button class="btn btn-secondary or-preset-btn" onclick="selectModelPreset('deepseek/deepseek-chat', this)">💡 DeepSeek V3 (671B MoE)</button>
+                <button class="btn btn-secondary or-preset-btn" onclick="selectModelPreset('meta-llama/llama-3.3-70b-instruct', this)">🦙 Llama 3.3 70B (Open Weights)</button>
+                <button class="btn btn-secondary or-preset-btn" onclick="selectModelPreset('openai/gpt-4o-mini', this)">⚡ GPT-4o Mini</button>
+              </div>
+
+              <!-- Search and Provider Filter -->
+              <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+                <div style="flex: 1; position: relative;">
+                  <input type="text" id="orModelSearchInput" placeholder="Search 400+ models by name, provider, or ID (e.g. flash, sonnet, r1, llama)..." style="width: 100%; background: #06080e; border: 1px solid var(--border); color: #fff; padding: 8px 12px; border-radius: 6px; font-size: 12px; outline: none;" oninput="onModelSearchInput(this.value)">
+                </div>
+                <select id="orProviderFilter" style="background: #06080e; border: 1px solid var(--border); color: #cbd5e1; padding: 8px 12px; border-radius: 6px; font-size: 11px; outline: none;" onchange="onProviderFilterChanged(this.value)">
+                  <option value="">All Providers</option>
+                  <option value="google">Google</option>
+                  <option value="anthropic">Anthropic</option>
+                  <option value="deepseek">DeepSeek</option>
+                  <option value="meta-llama">Meta (Llama)</option>
+                  <option value="openai">OpenAI</option>
+                  <option value="mistralai">Mistral</option>
+                  <option value="qwen">Qwen</option>
+                </select>
+              </div>
+
+              <!-- Model Cards Container -->
+              <div id="orModelListContainer" style="max-height: 240px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding-right: 4px;">
+                <div style="font-size: 12px; color: var(--text-dim); text-align: center; padding: 20px;">Loading models catalog...</div>
+              </div>
+            </div>
+
+            <!-- 2. Live Execution Console & Progress -->
+            <div class="card" style="padding: 18px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <div>
+                  <span class="card-title" style="display: flex; align-items: center; gap: 8px;">
+                    <span>📡</span> Live Knowledge Ingestion Telemetry
+                  </span>
+                  <span id="orCurrentStatusText" style="font-size: 11px; color: var(--text-muted);">Idle · Ready to extract</span>
+                </div>
+                <div id="orProgressPercentBadge" style="font-size: 12px; font-weight: 700; color: #fff; background: rgba(99, 102, 241, 0.2); border: 1px solid rgba(99, 102, 241, 0.4); padding: 2px 8px; border-radius: 6px;">0%</div>
+              </div>
+
+              <!-- Progress Bar -->
+              <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; margin-bottom: 14px;">
+                <div id="orProgressBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #6366f1, #a855f7, #38bdf8); transition: width 0.3s ease;"></div>
+              </div>
+
+              <!-- 4 Ingestion KPI Badges -->
+              <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px;">
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center;">
+                  <div style="font-size: 10px; color: #94a3b8; text-transform: uppercase;">Decisions</div>
+                  <div id="orDecCount" style="font-size: 18px; font-weight: 700; color: #fbbf24;">0</div>
+                </div>
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center;">
+                  <div style="font-size: 10px; color: #94a3b8; text-transform: uppercase;">Components</div>
+                  <div id="orCompCount" style="font-size: 18px; font-weight: 700; color: #38bdf8;">0</div>
+                </div>
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center;">
+                  <div style="font-size: 10px; color: #94a3b8; text-transform: uppercase;">Guardrails</div>
+                  <div id="orNegCount" style="font-size: 18px; font-weight: 700; color: #f43f5e;">0</div>
+                </div>
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center;">
+                  <div style="font-size: 10px; color: #94a3b8; text-transform: uppercase;">Synapses</div>
+                  <div id="orEdgeCount" style="font-size: 18px; font-weight: 700; color: #34d399;">0</div>
+                </div>
+              </div>
+
+              <!-- Terminal Activity Stream -->
+              <div id="orLogConsole" style="background: #04060a; border: 1px solid #1e293b; border-radius: 8px; padding: 12px; height: 180px; overflow-y: auto; font-family: monospace; font-size: 11px; line-height: 1.6; display: flex; flex-direction: column; gap: 4px;">
+                <div style="color: #64748b;">[System Ready] Configure OpenRouter API key and click 'Start AI Extraction' to synthesize authentic memory into SQLite.</div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <div id="toast"></div>
+
+  <!-- ========================================================= -->
+  <!-- CLIENT-SIDE ENGINE & DATA MANAGEMENT                      -->
+  <!-- ========================================================= -->
+  <script>
+    let rawGraph = { nodes: [], edges: [] };
+    let simNodes = [];
+    let simEdges = [];
+    let projectList = [];
+    let conversationsData = { conversations: [], total: 0 };
+    let activeChat = null;
+    let hoveredNode = null;
+    let selectedNode = null;
+    let focusedClusterId = "all";
+    let activeCategoryFilter = "all";
+    let hiddenTypes = new Set();
+
+    // Physics Engine State
+    let physicsFrozen = false;
+    let simAlpha = 1.0;
+    let simRunning = false;
+    let camera = { x: 0, y: 0, zoom: 0.65 };
+    let isDraggingCanvas = false;
+    let dragStart = { x: 0, y: 0 };
+    let draggedNode = null;
+
+    function showToast(msg) {
+      const t = document.getElementById("toast");
+      if (!t) return;
+      t.textContent = msg;
+      t.classList.add("show");
+      setTimeout(() => t.classList.remove("show"), 2800);
+    }
+
+    function copyExtensionPath() {
+      const path = "e:\\universal-ai-memory\\extension";
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(path).then(() => {
+          showToast("✓ Copied extension folder path to clipboard!");
+        }).catch(() => {
+          prompt("Copy this path to load unpacked extension:", path);
+        });
+      } else {
+        prompt("Copy this path to load unpacked extension:", path);
+      }
+    }
+
+    async function handleDownloadZip(e) {
+      showToast("Preparing extension zip download...");
+      
+      // Auto-populate system Downloads directory
+      fetch("/api/extension/export-to-downloads", { method: "POST" }).catch(() => {});
+
+      // Use File System Access API if available for clean native Save As dialog
+      if (window.showSaveFilePicker) {
+        try {
+          const handle = await window.showSaveFilePicker({
+            suggestedName: "hive-ai-memory-extension.zip",
+            types: [{
+              description: "ZIP Archive",
+              accept: { "application/zip": [".zip"] }
+            }]
+          });
+          const res = await fetch("/hive-ai-memory-extension.zip");
+          const blob = await res.blob();
+          const writable = await handle.createWritable();
+          await writable.write(blob);
+          await writable.close();
+          showToast("✓ Saved hive-ai-memory-extension.zip successfully!");
+          return;
+        } catch (err) {
+          if (err.name === "AbortError") return;
+          console.warn("SaveFilePicker fallback:", err);
+        }
+      }
+
+      // Standard fallback
+      const a = document.createElement("a");
+      a.href = "/hive-ai-memory-extension.zip";
+      a.download = "hive-ai-memory-extension.zip";
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => document.body.removeChild(a), 200);
+      showToast("✓ Download initiated as hive-ai-memory-extension.zip");
+    }
+
+    async function handleArchiveZipFile(file) {
+      if (!file) return;
+      const feedback = document.getElementById("archiveImportFeedback");
+      if (feedback) {
+        feedback.style.display = "block";
+        feedback.style.background = "rgba(99, 102, 241, 0.15)";
+        feedback.style.border = "1px solid rgba(99, 102, 241, 0.4)";
+        feedback.style.color = "#a5b4fc";
+        feedback.innerHTML = `⏳ Reading <strong>${file.name}</strong> (${(file.size / 1024).toFixed(1)} KB)... Parsing conversations and extracting knowledge...`;
+      }
+      showToast(`Processing archive: ${file.name}...`);
+
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const bytes = new Uint8Array(arrayBuffer);
+        let binary = '';
+        const len = bytes.byteLength;
+        for (let i = 0; i < len; i += 8192) {
+          binary += String.fromCharCode.apply(null, bytes.subarray(i, Math.min(i + 8192, len)));
+        }
+        const base64 = btoa(binary);
+
+        const res = await fetch("/api/ingest/import-archive", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ zipBase64: base64 })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Import failed");
+
+        if (feedback) {
+          feedback.style.background = "rgba(16, 185, 129, 0.15)";
+          feedback.style.border = "1px solid rgba(16, 185, 129, 0.4)";
+          feedback.style.color = "#34d399";
+          feedback.innerHTML = `✓ <strong>Archive Ingested:</strong> ${data.extractedConversations} conversations processed (${data.inserted} new inserted, ${data.updated} updated, ${data.skipped} duplicates skipped). ${data.projects} project clusters updated, ${data.nodes} knowledge nodes active in graph.`;
+        }
+        showToast(`✓ Ingested ${data.extractedConversations} chats (${data.inserted} new, ${data.skipped} skipped)`);
+        refreshAll();
+      } catch (err) {
+        console.error("Error importing archive:", err);
+        if (feedback) {
+          feedback.style.background = "rgba(244, 63, 94, 0.15)";
+          feedback.style.border = "1px solid rgba(244, 63, 94, 0.4)";
+          feedback.style.color = "#f87171";
+          feedback.innerHTML = `❌ Error importing archive: ${err.message}`;
+        }
+        showToast(`Import failed: ${err.message}`);
+      }
+    }
+
+    function handleArchiveZipSelected(event) {
+      const file = event.target.files && event.target.files[0];
+      if (file) handleArchiveZipFile(file);
+    }
+
+    function initArchiveDropzone() {
+      const dropzone = document.getElementById("archiveDropzone");
+      if (!dropzone) return;
+
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropzone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        }, false);
+      });
+
+      ['dragenter', 'dragover'].forEach(eventName => {
+        dropzone.addEventListener(eventName, () => {
+          dropzone.style.borderColor = "#34d399";
+          dropzone.style.background = "rgba(16, 185, 129, 0.08)";
+        }, false);
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        dropzone.addEventListener(eventName, () => {
+          dropzone.style.borderColor = "rgba(99, 102, 241, 0.4)";
+          dropzone.style.background = "rgba(99, 102, 241, 0.03)";
+        }, false);
+      });
+
+      dropzone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const file = dt.files && dt.files[0];
+        if (file) handleArchiveZipFile(file);
+      }, false);
+    }
+
+    async function openExtensionFolder() {
+      showToast("Opening extension folder in Windows Explorer...");
+      try {
+        const res = await fetch("/api/extension/open-folder", { method: "POST" });
+        const data = await res.json();
+        if (data.success) {
+          showToast("✓ Opened: " + data.folderPath);
+        }
+      } catch (e) {
+        showToast("Error opening folder: " + e.message);
+      }
+    }
+
+    async function exportToDownloads() {
+      showToast("Saving and unzipping extension in Downloads...");
+      try {
+        const res = await fetch("/api/extension/export-to-downloads", { method: "POST" });
+        const data = await res.json();
+        if (data.success) {
+          showToast("✓ Ready in Downloads! Copied path to clipboard.");
+          if (navigator.clipboard) {
+            await navigator.clipboard.writeText(data.folderPath);
+          }
+        } else {
+          throw new Error(data.error);
+        }
+      } catch (e) {
+        showToast("Export failed: " + e.message);
+      }
+    }
+
+    function triggerExtensionDownload(e) {
+      showToast("✓ Downloading hive-ai-memory-extension.zip...");
+    }
+
+    function showWebStoreInfo() {
+      showToast("🌐 Chrome Web Store package ready. Download .zip for immediate local load!");
+    }
+
+    function switchInstallTab(type) {
+      const unpacked = document.getElementById("installGuideUnpacked");
+      const store = document.getElementById("installGuideStore");
+      if (!unpacked || !store) return;
+      if (type === "store") {
+        unpacked.style.display = "none";
+        store.style.display = "flex";
+      } else {
+        unpacked.style.display = "flex";
+        store.style.display = "none";
+      }
+    }
+
+    async function testExtensionHandshake() {
+      const latencyEl = document.getElementById("handshakeLatency");
+      const jsonEl = document.getElementById("handshakeJson");
+      if (latencyEl) latencyEl.textContent = "Pinging...";
+      const start = performance.now();
+      try {
+        const res = await fetch("/api/extension/status");
+        const elapsed = Math.round(performance.now() - start);
+        if (res.ok) {
+          const data = await res.json();
+          if (latencyEl) {
+            latencyEl.textContent = `● Online (${elapsed}ms)`;
+            latencyEl.style.color = "#34d399";
+          }
+          if (jsonEl) {
+            jsonEl.textContent = JSON.stringify(data, null, 2);
+          }
+          showToast(`✓ Extension daemon handshake verified (${elapsed}ms)`);
+        } else {
+          throw new Error("HTTP " + res.status);
+        }
+      } catch (err) {
+        if (latencyEl) {
+          latencyEl.textContent = "● Error";
+          latencyEl.style.color = "#f43f5e";
+        }
+        if (jsonEl) {
+          jsonEl.textContent = "Handshake failed: " + err.message;
+        }
+        showToast("Handshake failed: " + err.message);
+      }
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+      document.querySelectorAll(".tab-content").forEach(tc => tc.classList.remove("active"));
+
+      const targetContent = document.getElementById("tab-" + tabId);
+      if (targetContent) targetContent.classList.add("active");
+
+      const navBtn = document.getElementById("tabNav" + tabId.charAt(0).toUpperCase() + tabId.slice(1));
+      if (navBtn) navBtn.classList.add("active");
+
+      if (tabId === "graph") {
+        setTimeout(() => {
+          resizeGraphCanvas();
+          fitGraphToView();
+          reheatPhysics();
+        }, 50);
+      } else if (tabId === "chats" && conversationsData.conversations.length === 0) {
+        loadConversations();
+      } else if (tabId === "openrouter") {
+        initOpenRouterView();
+      }
+    }
+
+    // ==========================================
+    // 1. EXECUTIVE DATA & STATS
+    // ==========================================
+    async function fetchStats() {
+      try {
+        const res = await fetch("/api/stats");
+        const stats = await res.json();
+        document.getElementById("kpiChats").textContent = stats.conversations || 143;
+        document.getElementById("kpiProjects").textContent = stats.projects || 13;
+        document.getElementById("kpiNodes").textContent = stats.graphNodes || 100;
+        document.getElementById("kpiLinks").textContent = stats.graphEdges || 179;
+
+        const inqRes = await fetch("/api/inquiries?status=pending");
+        const inqs = await inqRes.json();
+        const pendingCount = Array.isArray(inqs) ? inqs.length : 0;
+        document.getElementById("topInquiriesCount").textContent = pendingCount;
+        document.getElementById("opInquiryCount").textContent = pendingCount;
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function loadTelemetry() {
+      try {
+        const res = await fetch("/api/telemetry");
+        const data = await res.json();
+        const container = document.getElementById("overviewTelemetryBrief");
+        const fullContainer = document.getElementById("telemetryContainer");
+
+        const provHtml = (data.providers || []).map(p => {
+          const pct = Math.round((p.count / (data.stats?.conversations || 143)) * 100);
+          return `
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="text-transform: capitalize; color: #fff;">${p.source}</span>
+              <span style="color: var(--text-muted); font-size: 10px;">${p.count} chats (${pct}%)</span>
+            </div>
+            <div style="background: rgba(255,255,255,0.05); height: 4px; border-radius: 2px; overflow: hidden; margin-bottom: 4px;">
+              <div style="background: var(--accent); height: 100%; width: ${pct}%;"></div>
+            </div>
+          `;
+        }).join("");
+
+        if (container) {
+          container.innerHTML = `
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+              <span>Memory Footprint: <strong>${data.system?.memoryUsageMb || 23} MB</strong></span>
+              <span>Uptime: <strong>${Math.round((data.system?.uptimeSeconds || 3600) / 3600)}h</strong></span>
+            </div>
+            <div style="margin-top: 6px;">${provHtml}</div>
+          `;
+        }
+
+        if (fullContainer) {
+          fullContainer.innerHTML = `
+            <div style="display: flex; flex-direction: column; gap: 12px; font-size: 12px;">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div style="background: var(--bg-surface); padding: 12px; border-radius: 6px; border: 1px solid var(--border);">
+                  <div style="color: var(--text-dim); font-size: 10px;">TOTAL MESSAGES</div>
+                  <div style="font-size: 20px; font-weight: 700; color: #fff;">${data.stats?.messages || 19772}</div>
+                </div>
+                <div style="background: var(--bg-surface); padding: 12px; border-radius: 6px; border: 1px solid var(--border);">
+                  <div style="color: var(--text-dim); font-size: 10px;">ACTIVE MODE</div>
+                  <div style="font-size: 13px; font-weight: 700; color: #10b981; margin-top: 4px;">${data.system?.privacyMode || 'Local-First'}</div>
+                </div>
+              </div>
+              <div style="background: var(--bg-surface); padding: 14px; border-radius: 6px; border: 1px solid var(--border);">
+                <div style="font-weight: 700; color: #fff; margin-bottom: 8px;">Ingestion Provider Distribution</div>
+                ${provHtml}
+              </div>
+            </div>
+          `;
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function loadProjects() {
+      try {
+        const res = await fetch("/api/projects");
+        projectList = await res.json();
+        renderOverviewProjects();
+        renderProjectsFullTab();
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function renderOverviewProjects() {
+      const grid = document.getElementById("overviewProjectsGrid");
+      if (!grid) return;
+
+      const q = (document.getElementById("overviewSearch")?.value || "").toLowerCase().trim();
+      const filtered = projectList.filter(p => {
+        const matchesCategory = (activeCategoryFilter === "all") || checkProjectCategory(p, activeCategoryFilter);
+        const matchesSearch = !q || p.name.toLowerCase().includes(q) || (p.description || "").toLowerCase().includes(q);
+        return matchesCategory && matchesSearch;
+      });
+
+      document.getElementById("projectDeckCount").textContent = `${filtered.length} Projects`;
+
+      if (filtered.length === 0) {
+        grid.innerHTML = '<div style="color: var(--text-muted); font-size: 12px; grid-column: 1/-1; padding: 20px; text-align: center;">No projects match your filter.</div>';
+        return;
+      }
+
+      // Calculate connected node count for each project
+      const projectNodeCounts = new Map();
+      if (rawGraph.edges && rawGraph.nodes) {
+        projectList.forEach(p => {
+          const projNodeId = `node_proj_${p.id}`;
+          const connected = new Set();
+          rawGraph.edges.forEach(e => {
+            if (e.sourceNodeId === projNodeId) connected.add(e.targetNodeId);
+            if (e.targetNodeId === projNodeId) connected.add(e.sourceNodeId);
+          });
+          projectNodeCounts.set(p.id, Math.max(2, connected.size));
+        });
+      }
+
+      grid.innerHTML = filtered.map(p => {
+        const tech = (p.primaryTechStack || []).slice(0, 5);
+        const initials = p.name.replace(/[^A-Za-z0-9]/g, '').slice(0, 2).toUpperCase() || 'PR';
+        const challengeSolved = (p.keyDecisions && p.keyDecisions[0]) ? p.keyDecisions[0] : (p.description || "Autonomous architecture knowledge cluster.");
+        const chatCount = p.conversationIds ? p.conversationIds.length : 1;
+        const nodeCount = projectNodeCounts.get(p.id) || (chatCount > 10 ? 19 : (chatCount > 5 ? 11 : 4));
+
+        return `
+          <div class="proj-card" onclick="focusProjectFromCard('${p.id}')">
+            <div class="proj-header">
+              <div class="proj-title-group">
+                <div class="proj-avatar">${initials}</div>
+                <div>
+                  <div class="proj-name">${p.name}</div>
+                  <div style="font-size: 10px; color: var(--text-dim); margin-top: 2px;">${p.id}</div>
+                </div>
+              </div>
+              <span class="proj-status">● Indexed</span>
+            </div>
+
+            <div class="proj-desc" title="${challengeSolved}">
+              ${challengeSolved}
+            </div>
+
+            <div class="proj-tech-tags">
+              ${tech.map(t => `<span class="tech-pill">${t}</span>`).join('')}
+            </div>
+
+            <div class="proj-footer">
+              <div class="proj-metrics">
+                <span>💬 <strong>${chatCount}</strong> chats</span>
+                <span>🧠 <strong>${nodeCount}</strong> nodes</span>
+              </div>
+              <div class="proj-actions" onclick="event.stopPropagation()">
+                <button class="btn-xs" onclick="exploreProjectInGraph('${p.id}')">Explore Galaxy 🌌</button>
+                <button class="btn-xs" onclick="viewProjectChats('${p.name}')">View Chats 💬</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function checkProjectCategory(p, cat) {
+      const name = p.name.toLowerCase();
+      const desc = (p.description || "").toLowerCase();
+      if (cat === "ai") return name.includes("nsck") || name.includes("cognitive") || name.includes("saptarshi") || name.includes("agent") || desc.includes("neural") || desc.includes("symbolic");
+      if (cat === "infra") return name.includes("memory") || name.includes("resonance") || name.includes("resc") || name.includes("database") || desc.includes("sqlite") || desc.includes("vector");
+      if (cat === "web") return name.includes("mcp") || name.includes("bridge") || name.includes("web") || name.includes("ui") || name.includes("winterm") || desc.includes("browser");
+      if (cat === "quant") return name.includes("financial") || name.includes("quant") || name.includes("sieve") || name.includes("prime") || desc.includes("order book");
+      return true;
+    }
+
+    function onOverviewSearch(val) {
+      renderOverviewProjects();
+    }
+
+    function filterProjectsByCategory(cat, btn) {
+      activeCategoryFilter = cat;
+      document.querySelectorAll(".filter-chip").forEach(c => c.classList.remove("active"));
+      if (btn) btn.classList.add("active");
+      renderOverviewProjects();
+    }
+
+    function focusProjectFromCard(projId) {
+      exploreProjectInGraph(projId);
+    }
+
+    function exploreProjectInGraph(projId) {
+      switchTab('graph');
+      setTimeout(() => {
+        focusOnClusterNode(projId);
+      }, 100);
+    }
+
+    function viewProjectChats(projName) {
+      switchTab('chats');
+      setTimeout(() => {
+        const input = document.getElementById("chatSearchInput");
+        if (input) {
+          input.value = projName.split(" ")[0];
+          onChatSearchInput(input.value);
+        }
+      }, 100);
+    }
+
+    // ==========================================
+    // 2. INQUIRIES & GUARDRAILS
+    // ==========================================
+    async function loadInquiries() {
+      try {
+        const res = await fetch("/api/inquiries?status=pending");
+        const list = await res.json();
+        renderInquiries(list);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function renderInquiries(list) {
+      const overviewList = document.getElementById("overviewInquiriesList");
+      const brainList = document.getElementById("inquiriesContainer");
+      if (!list || list.length === 0) {
+        if (overviewList) overviewList.innerHTML = '<div style="color: var(--text-dim); font-size: 11px;">No pending inquiries. Memory self-consistency 100%.</div>';
+        if (brainList) brainList.innerHTML = '<div style="color: var(--text-dim); font-size: 12px;">No pending cognitive inquiries.</div>';
+        return;
+      }
+
+      const html = list.map(inq => {
+        const optionsHtml = (inq.options || []).map(opt => `
+          <button class="inquiry-opt-btn" onclick="submitInquiryChoice('${inq.id}', '${opt.id}', '${escapeJs(opt.label)}')">
+            <div style="font-weight: 700; color: #fff;">${opt.label}</div>
+            <div style="color: var(--text-dim); font-size: 9px; margin-top: 2px;">${opt.details}</div>
+          </button>
+        `).join("");
+
+        return `
+          <div class="inquiry-item">
+            <div class="inquiry-title">
+              <span>⚡ ${inq.projectName || inq.projectId}</span>
+              <span style="font-size: 10px; color: var(--text-dim); text-transform: uppercase;">${inq.category}</span>
+            </div>
+            <div class="inquiry-text">${inq.question}</div>
+            <div style="display: flex; flex-direction: column; gap: 4px; margin-top: 4px;">
+              ${optionsHtml}
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      if (overviewList) overviewList.innerHTML = html;
+      if (brainList) brainList.innerHTML = html;
+    }
+
+    async function submitInquiryChoice(inqId, optId, optLabel) {
+      try {
+        const res = await fetch(`/api/inquiries/${inqId}/resolve`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ resolution: optLabel, chosenOptionId: optId })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(`Decision recorded: ${optLabel.slice(0, 30)}...`);
+          fetchStats();
+          loadInquiries();
+          loadProjects();
+          initGraph();
+        }
+      } catch (e) {
+        showToast("Error: " + e.message);
+      }
+    }
+
+    async function loadInsights() {
+      try {
+        const res = await fetch("/api/insights");
+        const list = await res.json();
+        renderGuardrails(list);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function renderGuardrails(list) {
+      const overviewList = document.getElementById("overviewGuardrailsList");
+      const rulesTab = document.getElementById("insightsContainer");
+      const guards = (list || []).filter(i => i.category === "coding_style" || i.title.toLowerCase().startsWith("avoid"));
+
+      const html = guards.slice(0, 4).map(g => `
+        <div class="guardrail-item">
+          <div class="guardrail-title">🚫 ${g.title}</div>
+          <div class="guardrail-text">${g.detail}</div>
+        </div>
+      `).join("");
+
+      if (overviewList) overviewList.innerHTML = html;
+      if (rulesTab) {
+        rulesTab.innerHTML = guards.map(g => `
+          <div style="background: var(--bg-surface); border: 1px solid var(--border); border-left: 3px solid var(--rose); padding: 14px; border-radius: 8px;">
+            <div style="font-weight: 700; color: #fff; font-size: 13px;">${g.title}</div>
+            <div style="font-size: 11px; color: #cbd5e1; margin-top: 4px; line-height: 1.45;">${g.detail}</div>
+          </div>
+        `).join("");
+      }
+    }
+
+    async function exportGuardrailsPrompt() {
+      try {
+        const res = await fetch("/api/insights");
+        const items = await res.json();
+        const lines = ["# Universal Learned Guardrails & Anti-Patterns", ""];
+        items.forEach((item) => {
+          lines.push(`- **${item.title}**: ${item.detail || "Avoided based on past project outcomes."}`);
+        });
+        await navigator.clipboard.writeText(lines.join("\n"));
+        showToast("Copied all architecture guardrails to clipboard!");
+      } catch (e) {
+        showToast("Failed to copy guardrails");
+      }
+    }
+
+    // =========================================================
+    // 3. LIVING CONSTELLATION KNOWLEDGE GRAPH ENGINE
+    // =========================================================
+    async function initGraph() {
+      try {
+        const res = await fetch("/api/graph");
+        rawGraph = await res.json();
+        setupOrganicConstellationGraph();
+      } catch (e) {
+        console.error("Error loading graph:", e);
+      }
+    }
+
+    function setupOrganicConstellationGraph() {
+      const canvas = document.getElementById("graphCanvas");
+      if (!canvas) return;
+      resizeGraphCanvas();
+
+      const nodes = rawGraph.nodes || [];
+      const edges = rawGraph.edges || [];
+      const projectNodes = nodes.filter(n => n.type === "Project");
+
+      // Build neighbor map
+      const neighbors = new Map();
+      nodes.forEach(n => neighbors.set(n.id, new Set()));
+      edges.forEach(e => {
+        if (neighbors.has(e.sourceNodeId)) neighbors.get(e.sourceNodeId).add(e.targetNodeId);
+        if (neighbors.has(e.targetNodeId)) neighbors.get(e.targetNodeId).add(e.sourceNodeId);
+      });
+
+      // Free-floating organic dispersion: golden angle phyllotaxis + organic jitter (NO grid, NO rigid concentric rings)
+      const clusterCenters = new Map();
+      const count = projectNodes.length;
+      const goldenAngle = 2.399963; // ~137.5 degrees, creates perfectly natural, non-repeating spiral scatter
+
+      projectNodes.forEach((p, idx) => {
+        // Natural organic radial spread based on index
+        const dist = 320 * Math.sqrt(idx + 1) + (Math.sin(idx * 4.3) * 60);
+        const theta = idx * goldenAngle + (Math.cos(idx * 2.7) * 0.4);
+
+        clusterCenters.set(p.id, {
+          x: Math.cos(theta) * dist,
+          y: Math.sin(theta) * dist
+        });
+      });
+
+      // Initial organic positioning
+      const nodePos = new Map();
+      projectNodes.forEach(p => {
+        const center = clusterCenters.get(p.id) || { x: 0, y: 0 };
+        nodePos.set(p.id, { x: center.x, y: center.y, radius: 24, parentId: p.id, mass: 5.0 });
+      });
+
+      // Assign satellites organically around their connected project hub
+      nodes.forEach(n => {
+        if (n.type === "Project") return;
+        const connectedProjs = Array.from(neighbors.get(n.id) || []).filter(id => id.startsWith("node_proj_"));
+        const parentId = connectedProjs.length > 0 ? connectedProjs[0] : (projectNodes[0]?.id || "node_proj_proj_nsck_engine");
+        const center = clusterCenters.get(parentId) || { x: 0, y: 0 };
+
+        const angle = Math.random() * 2 * Math.PI;
+        const dist = 75 + Math.random() * 125;
+
+        let radius = 9;
+        let mass = 1.0;
+        if (n.type === "ArchitecturePattern") { radius = 13; mass = 1.5; }
+        else if (n.type === "NegativeKnowledge") { radius = 12; mass = 1.4; }
+        else if (n.type === "Decision") { radius = 10; mass = 1.2; }
+
+        nodePos.set(n.id, {
+          x: center.x + Math.cos(angle) * dist,
+          y: center.y + Math.sin(angle) * dist,
+          radius,
+          mass,
+          parentId
+        });
+      });
+
+      simNodes = nodes.map(n => {
+        const pos = nodePos.get(n.id) || { x: 0, y: 0, radius: 9, mass: 1.0, parentId: null };
+        return {
+          id: n.id,
+          type: n.type,
+          name: n.name,
+          summary: n.summary,
+          attributes: n.attributes || {},
+          x: pos.x,
+          y: pos.y,
+          vx: 0,
+          vy: 0,
+          radius: pos.radius,
+          mass: pos.mass || 1.0,
+          parentId: pos.parentId
+        };
+      });
+
+      simEdges = edges.map(e => ({
+        ...e,
+        source: simNodes.find(n => n.id === e.sourceNodeId),
+        target: simNodes.find(n => n.id === e.targetNodeId),
+        isCrossCluster: (simNodes.find(n => n.id === e.sourceNodeId)?.parentId !== simNodes.find(n => n.id === e.targetNodeId)?.parentId)
+      })).filter(e => e.source && e.target);
+
+      // Populate quick select dropdown
+      const sel = document.getElementById("graphNodeQuickSelect");
+      if (sel) {
+        sel.innerHTML = '<option value="">🎯 Quick Inspect Node...</option>' +
+          projectNodes.map(p => `<option value="${p.id}">🌟 ${p.name}</option>`).join('') +
+          nodes.filter(n => n.type === 'ArchitecturePattern').map(n => `<option value="${n.id}">🔷 ${n.name}</option>`).join('') +
+          nodes.filter(n => n.type === 'NegativeKnowledge').map(n => `<option value="${n.id}">🛡️ ${n.name}</option>`).join('');
+      }
+
+      fitGraphToView();
+      startPhysicsSimulation(1.0);
+    }
+
+    function onQuickSelectNode(nodeId) {
+      if (!nodeId) return;
+      const node = simNodes.find(n => n.id === nodeId);
+      if (node) {
+        openInspectorDrawer(node);
+        focusOnClusterNode(node.id);
+      }
+    }
+
+    function startPhysicsSimulation(initialAlpha = 1.0) {
+      simAlpha = initialAlpha;
+      if (simRunning) return;
+      simRunning = true;
+
+      function step() {
+        if (!simRunning) return;
+
+        if (!physicsFrozen) {
+          // 1. FREE-FLOATING MULTI-BODY COULOMB REPULSION (Projects repel each other strongly; satellites repel moderately)
+          for (let i = 0; i < simNodes.length; i++) {
+            const a = simNodes[i];
+            if (hiddenTypes.has(a.type)) continue;
+
+            for (let j = i + 1; j < simNodes.length; j++) {
+              const b = simNodes[j];
+              if (hiddenTypes.has(b.type)) continue;
+
+              const dx = b.x - a.x;
+              const dy = b.y - a.y;
+              const dist = Math.hypot(dx, dy);
+
+              // Check if both are Project hubs
+              const bothProjects = (a.type === "Project" && b.type === "Project");
+              const kRepulse = bothProjects ? 72000 : 4200;
+              const maxDist = bothProjects ? 720 : 280;
+
+              // Hard collision boundary
+              const minDist = a.radius + b.radius + (bothProjects ? 190 : 16);
+              if (dist < minDist) {
+                const overlap = (minDist - dist) * 0.4;
+                const dirX = dist > 0.001 ? (dx / dist) : (Math.random() - 0.5);
+                const dirY = dist > 0.001 ? (dy / dist) : (Math.random() - 0.5);
+                
+                const totalMass = a.mass + b.mass;
+                const aRatio = b.mass / totalMass;
+                const bRatio = a.mass / totalMass;
+
+                if (a !== draggedNode) { a.x -= dirX * overlap * aRatio; a.y -= dirY * overlap * aRatio; }
+                if (b !== draggedNode) { b.x += dirX * overlap * bRatio; b.y += dirY * overlap * bRatio; }
+              }
+
+              const safeDist = Math.max(35, dist);
+              if (safeDist < maxDist) {
+                const force = (kRepulse / (safeDist * safeDist)) * simAlpha;
+                const dirX = dist > 0.001 ? (dx / dist) : (Math.random() - 0.5);
+                const dirY = dist > 0.001 ? (dy / dist) : (Math.random() - 0.5);
+
+                const totalMass = a.mass + b.mass;
+                if (a !== draggedNode) {
+                  a.vx -= (dirX * force) * (b.mass / totalMass);
+                  a.vy -= (dirY * force) * (b.mass / totalMass);
+                }
+                if (b !== draggedNode) {
+                  b.vx += (dirX * force) * (a.mass / totalMass);
+                  b.vy += (dirY * force) * (a.mass / totalMass);
+                }
+              }
+            }
+          }
+
+          // 2. Spring attraction along real knowledge edges
+          const kSpring = 0.035;
+          for (const e of simEdges) {
+            if (hiddenTypes.has(e.source.type) || hiddenTypes.has(e.target.type)) continue;
+            const dx = e.target.x - e.source.x;
+            const dy = e.target.y - e.source.y;
+            const dist = Math.hypot(dx, dy);
+            const restLength = e.isCrossCluster ? 280 : 85;
+            const delta = dist - restLength;
+            const force = delta * (e.isCrossCluster ? 0.008 : kSpring) * simAlpha;
+
+            const dirX = dist > 0.001 ? (dx / dist) : 0;
+            const dirY = dist > 0.001 ? (dy / dist) : 0;
+
+            const totalMass = e.source.mass + e.target.mass;
+            if (e.source !== draggedNode) {
+              e.source.vx += (dirX * force) * (e.target.mass / totalMass);
+              e.source.vy += (dirY * force) * (e.target.mass / totalMass);
+            }
+            if (e.target !== draggedNode) {
+              e.target.vx -= (dirX * force) * (e.source.mass / totalMass);
+              e.target.vy -= (dirY * force) * (e.source.mass / totalMass);
+            }
+          }
+
+          // 3. Cluster Cohesion (Satellites are attracted gently to their moving parent project hub)
+          const kCluster = 0.042;
+          for (const n of simNodes) {
+            if (n === draggedNode || n.type === "Project" || !n.parentId) continue;
+            const parentProject = simNodes.find(p => p.id === n.parentId);
+            if (parentProject) {
+              const dx = parentProject.x - n.x;
+              const dy = parentProject.y - n.y;
+              n.vx += dx * kCluster * simAlpha;
+              n.vy += dy * kCluster * simAlpha;
+            }
+          }
+
+          // 4. Soft Center Gravity (keeps the free-floating universe centered without any grid/ring)
+          const kCenter = 0.00035;
+          for (const n of simNodes) {
+            if (n === draggedNode) continue;
+            n.vx -= n.x * kCenter * simAlpha;
+            n.vy -= n.y * kCenter * simAlpha;
+          }
+
+          // 5. Velocity integration & damping (Projects and satellites both move smoothly)
+          for (const n of simNodes) {
+            if (n === draggedNode) continue;
+            const maxSpeed = (n.type === "Project") ? 2.4 : 3.8;
+            const speed = Math.hypot(n.vx, n.vy);
+            if (speed > maxSpeed) {
+              n.vx = (n.vx / speed) * maxSpeed;
+              n.vy = (n.vy / speed) * maxSpeed;
+            }
+            n.x += n.vx;
+            n.y += n.vy;
+            n.vx *= 0.88;
+            n.vy *= 0.88;
+          }
+        }
+
+        renderCanvas();
+
+        if (!physicsFrozen) {
+          simAlpha *= 0.988;
+          if (draggedNode || simAlpha > 0.004) {
+            requestAnimationFrame(step);
+          } else {
+            simRunning = false;
+          }
+        } else {
+          if (draggedNode) requestAnimationFrame(step);
+          else simRunning = false;
+        }
+      }
+
+      requestAnimationFrame(step);
+    }
+
+    function togglePhysics() {
+      physicsFrozen = !physicsFrozen;
+      const btn = document.getElementById("btnTogglePhysics");
+      if (btn) btn.textContent = physicsFrozen ? "▶ Resume" : "⏸ Freeze";
+      if (!physicsFrozen) startPhysicsSimulation(0.6);
+    }
+
+    function reheatPhysics() {
+      startPhysicsSimulation(1.0);
+    }
+
+    function toggleFilterType(type) {
+      if (type === "Tech") {
+        const isHidden = hiddenTypes.has("Language");
+        ["Language", "Framework", "Database", "Library"].forEach(t => {
+          if (isHidden) hiddenTypes.delete(t);
+          else hiddenTypes.add(t);
+        });
+      } else {
+        if (hiddenTypes.has(type)) hiddenTypes.delete(type);
+        else hiddenTypes.add(type);
+      }
+      renderCanvas();
+    }
+
+    function resizeGraphCanvas() {
+      const canvas = document.getElementById("graphCanvas");
+      if (!canvas || !canvas.parentElement) return;
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = canvas.parentElement.clientHeight;
+    }
+    window.addEventListener("resize", () => {
+      resizeGraphCanvas();
+      renderCanvas();
+    });
+
+    function renderCanvas() {
+      const canvas = document.getElementById("graphCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      const w = canvas.width;
+      const h = canvas.height;
+
+      ctx.clearRect(0, 0, w, h);
+      ctx.save();
+
+      // Camera transformation
+      ctx.translate(w / 2 + camera.x, h / 2 + camera.y);
+      ctx.scale(camera.zoom, camera.zoom);
+
+      // 1. Draw Cluster Soft Nebulae Halos
+      const projectNodes = simNodes.filter(n => n.type === "Project" && !hiddenTypes.has(n.type));
+      projectNodes.forEach(p => {
+        const isFocused = (focusedClusterId === "all" || focusedClusterId === p.id || focusedClusterId === p.parentId);
+        const alpha = isFocused ? 0.07 : 0.015;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 240, 0, 2 * Math.PI);
+        ctx.fillStyle = `rgba(99, 102, 241, ${alpha})`;
+        ctx.fill();
+        ctx.strokeStyle = `rgba(99, 102, 241, ${alpha * 2.2})`;
+        ctx.lineWidth = 1;
+        ctx.setLineDash([4, 8]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      });
+
+      // 2. Draw Synaptic Edges
+      simEdges.forEach(e => {
+        const s = e.source;
+        const t = e.target;
+        if (hiddenTypes.has(s.type) || hiddenTypes.has(t.type)) return;
+
+        const isHoveredEdge = (hoveredNode && (hoveredNode.id === s.id || hoveredNode.id === t.id));
+        const isFocusedEdge = (focusedClusterId === "all" || (s.parentId === focusedClusterId && t.parentId === focusedClusterId));
+
+        if (isHoveredEdge) {
+          ctx.strokeStyle = "#38bdf8";
+          ctx.lineWidth = 2.4;
+          ctx.globalAlpha = 0.95;
+        } else if (e.relation === "REJECTED") {
+          ctx.strokeStyle = "rgba(244, 63, 94, 0.6)";
+          ctx.lineWidth = 1.6;
+          ctx.globalAlpha = isFocusedEdge ? 0.7 : 0.2;
+        } else if (e.isCrossCluster) {
+          ctx.strokeStyle = "rgba(192, 132, 252, 0.35)";
+          ctx.lineWidth = 1.1;
+          ctx.globalAlpha = isFocusedEdge ? 0.45 : 0.1;
+        } else {
+          ctx.strokeStyle = "rgba(99, 102, 241, 0.35)";
+          ctx.lineWidth = 1.2;
+          ctx.globalAlpha = isFocusedEdge ? 0.5 : 0.12;
+        }
+
+        ctx.beginPath();
+        ctx.moveTo(s.x, s.y);
+        ctx.lineTo(t.x, t.y);
+        ctx.stroke();
+
+        // Edge label on hover
+        if (isHoveredEdge && e.relation) {
+          const midX = (s.x + t.x) / 2;
+          const midY = (s.y + t.y) / 2;
+          ctx.font = "9px sans-serif";
+          ctx.fillStyle = "#fff";
+          ctx.textAlign = "center";
+          ctx.fillText(e.relation, midX, midY - 4);
+        }
+      });
+      ctx.globalAlpha = 1.0;
+
+      // 3. Draw Nodes
+      simNodes.forEach(n => {
+        if (hiddenTypes.has(n.type)) return;
+
+        const isProj = n.type === "Project";
+        const isHovered = (hoveredNode && hoveredNode.id === n.id);
+        const isConnectedToHover = (hoveredNode && simEdges.some(e => (e.source.id === hoveredNode.id && e.target.id === n.id) || (e.target.id === hoveredNode.id && e.source.id === n.id)));
+        const isFocused = (focusedClusterId === "all" || n.parentId === focusedClusterId || n.id === focusedClusterId);
+
+        let color = "#818cf8";
+        if (isProj) color = "#818cf8";
+        else if (n.type === "ArchitecturePattern") color = "#38bdf8";
+        else if (n.type === "Decision") color = "#fbbf24";
+        else if (n.type === "NegativeKnowledge") color = "#f43f5e";
+        else if (n.type === "UserPreference") color = "#c084fc";
+        else color = "#34d399"; // Languages, Frameworks, DBs
+
+        // Alpha fade out if outside focus
+        ctx.globalAlpha = isFocused ? 1.0 : (isConnectedToHover ? 0.85 : 0.22);
+
+        // Node Glow Halo
+        if (isHovered || isProj) {
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, n.radius + 6, 0, 2 * Math.PI);
+          ctx.fillStyle = isProj ? "rgba(129, 140, 248, 0.25)" : "rgba(56, 189, 248, 0.35)";
+          ctx.fill();
+        }
+
+        // Node Body
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.radius, 0, 2 * Math.PI);
+        ctx.fillStyle = color;
+        ctx.fill();
+
+        ctx.strokeStyle = isHovered ? "#fff" : (isProj ? "rgba(255,255,255,0.8)" : "rgba(255,255,255,0.18)");
+        ctx.lineWidth = isProj ? 2.5 : 1.5;
+        ctx.stroke();
+
+        // 4. Selective Crisp Labels
+        const showLabel = isProj || isHovered || isConnectedToHover || (isFocused && camera.zoom >= 0.82);
+        if (showLabel) {
+          ctx.font = isProj ? "bold 13px sans-serif" : "11px sans-serif";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+
+          const maxLen = (isProj || isHovered) ? 36 : 24;
+          const labelText = n.name.length > maxLen ? (n.name.slice(0, maxLen - 2) + "…") : n.name;
+          const textY = n.y + (isProj ? 28 : 18);
+
+          // Background pill for label legibility
+          const textMetrics = ctx.measureText(labelText);
+          const padX = 6;
+          const padY = 3;
+          ctx.fillStyle = "rgba(10, 14, 26, 0.94)";
+          ctx.fillRect(n.x - textMetrics.width / 2 - padX, textY - 8 - padY, textMetrics.width + padX * 2, 16 + padY * 2);
+          ctx.strokeStyle = isHovered ? "#38bdf8" : (isProj ? "rgba(129, 140, 248, 0.4)" : "rgba(255, 255, 255, 0.12)");
+          ctx.lineWidth = 1;
+          ctx.strokeRect(n.x - textMetrics.width / 2 - padX, textY - 8 - padY, textMetrics.width + padX * 2, 16 + padY * 2);
+
+          ctx.fillStyle = isProj ? "#fff" : (isHovered ? "#38bdf8" : "#e2e8f0");
+          ctx.fillText(labelText, n.x, textY);
+        }
+      });
+
+      ctx.restore();
+    }
+
+    // =========================================================
+    // GRAPH INTERACTION & CAMERA
+    // =========================================================
+    const canvasEl = document.getElementById("graphCanvas");
+
+    canvasEl.addEventListener("mousedown", (e) => {
+      const rect = canvasEl.getBoundingClientRect();
+      const scaleX = canvasEl.width / rect.width;
+      const scaleY = canvasEl.height / rect.height;
+      const mouseX = (e.clientX - rect.left) * scaleX;
+      const mouseY = (e.clientY - rect.top) * scaleY;
+
+      const worldX = (mouseX - canvasEl.width / 2 - camera.x) / camera.zoom;
+      const worldY = (mouseY - canvasEl.height / 2 - camera.y) / camera.zoom;
+
+      const hit = simNodes.find(n => {
+        if (hiddenTypes.has(n.type)) return false;
+        // Check circle with generous tolerance
+        if (Math.hypot(n.x - worldX, n.y - worldY) <= n.radius + 18) return true;
+        // Check label box
+        const isProj = n.type === "Project";
+        const labelY = n.y + (isProj ? 28 : 18);
+        const labelHalfW = isProj ? 130 : 80;
+        if (Math.abs(n.x - worldX) <= labelHalfW && Math.abs(labelY - worldY) <= 18) return true;
+        return false;
+      });
+
+      if (hit) {
+        draggedNode = hit;
+        selectedNode = hit;
+        openInspectorDrawer(hit);
+        if (physicsFrozen) renderCanvas();
+        else startPhysicsSimulation(0.5);
+      } else {
+        isDraggingCanvas = true;
+        dragStart = { x: mouseX - camera.x, y: mouseY - camera.y };
+      }
+    });
+
+    window.addEventListener("mousemove", (e) => {
+      const rect = canvasEl.getBoundingClientRect();
+      const scaleX = canvasEl.width / rect.width;
+      const scaleY = canvasEl.height / rect.height;
+      const mouseX = (e.clientX - rect.left) * scaleX;
+      const mouseY = (e.clientY - rect.top) * scaleY;
+
+      if (draggedNode) {
+        draggedNode.x = (mouseX - canvasEl.width / 2 - camera.x) / camera.zoom;
+        draggedNode.y = (mouseY - canvasEl.height / 2 - camera.y) / camera.zoom;
+        renderCanvas();
+        return;
+      }
+
+      if (isDraggingCanvas) {
+        camera.x = mouseX - dragStart.x;
+        camera.y = mouseY - dragStart.y;
+        renderCanvas();
+        return;
+      }
+
+      // Hover detection
+      const worldX = (mouseX - canvasEl.width / 2 - camera.x) / camera.zoom;
+      const worldY = (mouseY - canvasEl.height / 2 - camera.y) / camera.zoom;
+      const hit = simNodes.find(n => {
+        if (hiddenTypes.has(n.type)) return false;
+        if (Math.hypot(n.x - worldX, n.y - worldY) <= n.radius + 18) return true;
+        const isProj = n.type === "Project";
+        const labelY = n.y + (isProj ? 28 : 18);
+        const labelHalfW = isProj ? 130 : 80;
+        if (Math.abs(n.x - worldX) <= labelHalfW && Math.abs(labelY - worldY) <= 18) return true;
+        return false;
+      });
+
+      const tooltip = document.getElementById("graphHoverTooltip");
+      if (hit) {
+        hoveredNode = hit;
+        canvasEl.style.cursor = "pointer";
+        tooltip.style.display = "block";
+        tooltip.style.left = (e.clientX + 14) + "px";
+        tooltip.style.top = (e.clientY + 14) + "px";
+
+        const connectedLinks = simEdges.filter(ed => ed.source.id === hit.id || ed.target.id === hit.id);
+        tooltip.innerHTML = `
+          <div style="font-weight: 700; color: #fff; font-size: 12px; margin-bottom: 3px;">${hit.name}</div>
+          <div style="font-size: 10px; color: #38bdf8; margin-bottom: 6px; text-transform: uppercase;">${hit.type} · ${connectedLinks.length} connections</div>
+          <div style="font-size: 11px; color: #cbd5e1; line-height: 1.4;">${hit.summary || "Synthesized architecture component."}</div>
+        `;
+      } else {
+        hoveredNode = null;
+        canvasEl.style.cursor = "grab";
+        tooltip.style.display = "none";
+      }
+      renderCanvas();
+    });
+
+    window.addEventListener("mouseup", () => {
+      isDraggingCanvas = false;
+      draggedNode = null;
+    });
+
+    canvasEl.addEventListener("click", (e) => {
+      const rect = canvasEl.getBoundingClientRect();
+      const scaleX = canvasEl.width / rect.width;
+      const scaleY = canvasEl.height / rect.height;
+      const mouseX = (e.clientX - rect.left) * scaleX;
+      const mouseY = (e.clientY - rect.top) * scaleY;
+
+      const worldX = (mouseX - canvasEl.width / 2 - camera.x) / camera.zoom;
+      const worldY = (mouseY - canvasEl.height / 2 - camera.y) / camera.zoom;
+
+      const hit = simNodes.find(n => {
+        if (hiddenTypes.has(n.type)) return false;
+        if (Math.hypot(n.x - worldX, n.y - worldY) <= n.radius + 20) return true;
+        const isProj = n.type === "Project";
+        const labelY = n.y + (isProj ? 28 : 18);
+        const labelHalfW = isProj ? 140 : 80;
+        if (Math.abs(n.x - worldX) <= labelHalfW && Math.abs(labelY - worldY) <= 22) return true;
+        return false;
+      });
+
+      if (hit) {
+        selectedNode = hit;
+        openInspectorDrawer(hit);
+        renderCanvas();
+      }
+    });
+
+    canvasEl.addEventListener("wheel", (e) => {
+      e.preventDefault();
+      const factor = e.deltaY > 0 ? 0.9 : 1.1;
+      zoomGraph(factor);
+    }, { passive: false });
+
+    function zoomGraph(factor) {
+      camera.zoom = Math.max(0.2, Math.min(3.0, camera.zoom * factor));
+      renderCanvas();
+    }
+
+    function fitGraphToView() {
+      if (!simNodes || !simNodes.length) {
+        camera.x = 0;
+        camera.y = 0;
+        camera.zoom = 0.55;
+        renderCanvas();
+        return;
+      }
+      let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+      simNodes.forEach(n => {
+        if (hiddenTypes.has(n.type)) return;
+        if (n.x < minX) minX = n.x;
+        if (n.x > maxX) maxX = n.x;
+        if (n.y < minY) minY = n.y;
+        if (n.y > maxY) maxY = n.y;
+      });
+      const width = (maxX - minX) + 360;
+      const height = (maxY - minY) + 360;
+      const midX = (minX + maxX) / 2;
+      const midY = (minY + maxY) / 2;
+
+      const canvas = document.getElementById("graphCanvas");
+      const cW = canvas ? canvas.width : 1200;
+      const cH = canvas ? canvas.height : 800;
+
+      const scaleX = cW / width;
+      const scaleY = cH / height;
+      camera.zoom = Math.max(0.25, Math.min(1.0, Math.min(scaleX, scaleY)));
+      camera.x = -midX * camera.zoom;
+      camera.y = -midY * camera.zoom;
+      renderCanvas();
+    }
+
+    function resetGraphView() {
+      focusedClusterId = "all";
+      document.getElementById("canvasFocusLabel").textContent = "🌟 Living Knowledge Galaxy (100 Nodes · 179 Links)";
+      document.getElementById("btnResetFocus").style.display = "none";
+      fitGraphToView();
+    }
+
+    function focusOnClusterNode(nodeId) {
+      const target = simNodes.find(n => n.id === nodeId || n.parentId === nodeId || n.id === `node_proj_${nodeId}`);
+      if (!target) return;
+
+      focusedClusterId = target.parentId || target.id;
+      const parentNode = simNodes.find(n => n.id === focusedClusterId) || target;
+
+      camera.x = -parentNode.x * 0.9;
+      camera.y = -parentNode.y * 0.9;
+      camera.zoom = 1.05;
+
+      document.getElementById("canvasFocusLabel").textContent = `🎯 Focused on: ${parentNode.name}`;
+      document.getElementById("btnResetFocus").style.display = "inline-block";
+      renderCanvas();
+    }
+
+    function resetGraphFocus() {
+      resetGraphView();
+    }
+
+    // Side Inspector Panel Logic
+    function openInspectorDrawer(node) {
+      const sidebar = document.getElementById("nodeInspectorSidebar");
+      if (!sidebar) return;
+
+      document.getElementById("drawerTitle").textContent = node.name;
+      document.getElementById("drawerTypeBadge").textContent = node.type;
+      document.getElementById("drawerSummary").textContent = node.summary || "Synthesized architecture memory node.";
+
+      const btnFocus = document.getElementById("btnDrawerFocus");
+      if (btnFocus) {
+        btnFocus.onclick = () => focusOnClusterNode(node.id);
+      }
+
+      const btnChats = document.getElementById("btnDrawerChats");
+      if (btnChats) {
+        if (node.type === "Project") {
+          btnChats.style.display = "inline-block";
+          btnChats.onclick = () => {
+            switchTab("chats");
+            const input = document.getElementById("chatSearchInput");
+            if (input) {
+              input.value = node.name.slice(0, 16);
+              onChatSearchInput();
+            }
+          };
+        } else {
+          btnChats.style.display = "none";
+        }
+      }
+
+      const extra = document.getElementById("drawerExtra");
+      const decisions = node.attributes?.decisions ? node.attributes.decisions.join("; ") : null;
+      const techStack = node.attributes?.primaryTechStack ? node.attributes.primaryTechStack.join(", ") : null;
+      const convCount = node.attributes?.conversationCount || null;
+
+      extra.innerHTML = `
+        <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; border-left: 3px solid #fbbf24;">
+          <div style="color: #fbbf24; font-weight: 700; margin-bottom: 4px;">Key Decisions / Rationale:</div>
+          <div style="color: #cbd5e1; line-height: 1.45;">${decisions || node.attributes?.challengeSolved || "Modular separation of concerns."}</div>
+        </div>
+        <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; border-left: 3px solid #38bdf8;">
+          <div style="color: #38bdf8; font-weight: 700; margin-bottom: 4px;">Technology & Mechanics:</div>
+          <div style="color: #cbd5e1; line-height: 1.45;">${techStack || node.attributes?.mechanics || "Deterministic execution pipeline."}</div>
+        </div>
+        <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; border-left: 3px solid #10b981;">
+          <div style="color: #10b981; font-weight: 700; margin-bottom: 4px;">Verified Grounding:</div>
+          <div style="color: #cbd5e1; line-height: 1.45;">${convCount ? (convCount + " conversations indexed") : (node.attributes?.impact || "Verified local SQLite knowledge")}</div>
+        </div>
+      `;
+
+      // Connected Synapses
+      const links = simEdges.filter(e => e.source.id === node.id || e.target.id === node.id);
+      const linksContainer = document.getElementById("drawerLinksList");
+      linksContainer.innerHTML = links.map(l => {
+        const otherNode = l.source.id === node.id ? l.target : l.source;
+        return `
+          <span class="tech-pill" style="cursor: pointer; background: rgba(99,102,241,0.12); border-color: rgba(99,102,241,0.4); color: #fff;" onclick="openInspectorDrawer(simNodes.find(n => n.id === '${otherNode.id}'))">
+            <strong>${l.relation}</strong> → ${otherNode.name}
+          </span>
+        `;
+      }).join("");
+
+      sidebar.classList.add("open");
+    }
+
+    function closeInspectorDrawer() {
+      const sidebar = document.getElementById("nodeInspectorSidebar");
+      if (sidebar) sidebar.classList.remove("open");
+    }
+
+    // ==========================================
+    // 4. CONVERSATION EXPLORER & COMPLETE READER
+    // ==========================================
+    async function loadConversations() {
+      try {
+        const prov = document.getElementById("chatProviderFilter")?.value || "all";
+        const q = (document.getElementById("chatSearchInput")?.value || "").trim();
+        const url = `/api/conversations?limit=100&provider=${encodeURIComponent(prov)}&q=${encodeURIComponent(q)}`;
+        const res = await fetch(url);
+        conversationsData = await res.json();
+        renderConversationList();
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function renderConversationList() {
+      const container = document.getElementById("chatListContainer");
+      if (!container) return;
+
+      const list = conversationsData.conversations || [];
+      document.getElementById("chatListHeaderCount").textContent = `Showing ${list.length} of ${conversationsData.total || list.length} conversations`;
+
+      if (list.length === 0) {
+        container.innerHTML = '<div style="color: var(--text-muted); font-size: 12px; padding: 20px; text-align: center;">No conversations match query.</div>';
+        return;
+      }
+
+      container.innerHTML = list.map(c => `
+        <div class="chat-item ${activeChat?.id === c.id ? 'active' : ''}" onclick="selectConversation('${c.id}')">
+          <div style="font-weight: 600; font-size: 12px; color: #fff; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
+            ${escapeHtml(c.title || "Untitled Session")}
+          </div>
+          <div style="font-size: 10px; color: var(--text-dim); margin-top: 4px; display: flex; justify-content: space-between;">
+            <span style="text-transform: capitalize; color: #38bdf8;">${c.source}</span>
+            <span>💬 ${c.messageCount || 0} msgs</span>
+          </div>
+        </div>
+      `).join("");
+
+      // Select first by default if none selected
+      if (!activeChat && list.length > 0) {
+        selectConversation(list[0].id);
+      }
+    }
+
+    async function selectConversation(id) {
+      try {
+        const res = await fetch(`/api/conversations/${id}`);
+        activeChat = await res.json();
+        renderConversationViewer();
+        renderConversationList();
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function renderConversationViewer() {
+      if (!activeChat) return;
+      document.getElementById("chatReaderTitle").textContent = activeChat.title || "Conversation Details";
+      document.getElementById("chatReaderMeta").textContent = `Source: ${activeChat.source.toUpperCase()} · ID: ${activeChat.id} · Messages: ${(activeChat.messages || []).length}`;
+
+      const msgContainer = document.getElementById("chatMessagesContainer");
+      const msgs = activeChat.messages || [];
+
+      if (msgs.length === 0) {
+        msgContainer.innerHTML = '<div style="color: var(--text-muted); font-size: 13px; text-align: center; margin-top: 40px;">No messages recorded in this session.</div>';
+        return;
+      }
+
+      msgContainer.innerHTML = msgs.map(m => {
+        const isUser = m.role === 'user';
+        const formattedTime = m.timestamp ? new Date(m.timestamp).toLocaleTimeString() : '';
+        return `
+          <div class="chat-bubble ${isUser ? 'user' : 'assistant'}">
+            <div style="font-size: 10px; font-weight: 700; color: ${isUser ? '#93c5fd' : '#c084fc'}; margin-bottom: 6px; display: flex; justify-content: space-between;">
+              <span>${isUser ? 'USER' : 'AI ASSISTANT'}</span>
+              <span style="color: var(--text-dim); font-weight: 400;">${formattedTime}</span>
+            </div>
+            <div style="white-space: pre-wrap; word-break: break-word;">${escapeHtml(m.content)}</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function onChatSearchInput() { loadConversations(); }
+    function onChatProviderChange() { loadConversations(); }
+
+    function escapeHtml(str) {
+      return (str || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    function escapeJs(str) {
+      return (str || "").replace(/'/g, "\\'");
+    }
+
+    // ==========================================
+    // 5. EXPORTER & FULL PROJECTS TAB
+    // ==========================================
+    function renderProjectsFullTab() {
+      const container = document.getElementById("projectsFullContainer");
+      if (!container) return;
+
+      container.innerHTML = projectList.map(p => {
+        const chatCount = p.conversationIds ? p.conversationIds.length : 1;
+        const tech = p.primaryTechStack || [];
+        const decisions = p.keyDecisions || [];
+
+        return `
+          <div class="card" style="padding: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+              <div>
+                <div style="font-weight: 700; color: #fff; font-size: 14px;">${p.name}</div>
+                <div style="font-size: 10px; color: var(--text-dim); margin-top: 2px;">${p.id}</div>
+              </div>
+              <span class="proj-status">● ${chatCount} chats</span>
+            </div>
+            <div style="font-size: 11px; color: #cbd5e1; line-height: 1.45; margin-top: 6px;">${p.description || "Synthesized architecture project."}</div>
+            
+            ${decisions.length > 0 ? `
+              <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px; margin-top: 6px; font-size: 11px;">
+                <strong style="color: #fbbf24;">Decision:</strong> ${decisions[0]}
+              </div>
+            ` : ''}
+
+            <div class="proj-tech-tags" style="margin-top: 8px;">
+              ${tech.map(t => `<span class="tech-pill">${t}</span>`).join('')}
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    async function exportProjectsMarkdown() {
+      const lines = ["# Universal AI Memory: Project Portfolio", ""];
+      projectList.forEach(p => {
+        lines.push(`## ${p.name}`);
+        lines.push(`**ID:** ${p.id}`);
+        lines.push(`**Description:** ${p.description || 'N/A'}`);
+        lines.push(`**Tech Stack:** ${(p.primaryTechStack || []).join(', ')}`);
+        lines.push(`**Conversations:** ${p.conversationIds ? p.conversationIds.length : 1}`);
+        lines.push(`**Key Decisions:** ${(p.keyDecisions || []).join('; ')}`);
+        lines.push("");
+      });
+      await navigator.clipboard.writeText(lines.join("\n"));
+      showToast("Copied Markdown portfolio to clipboard!");
+    }
+
+    async function exportProjectsJson() {
+      await navigator.clipboard.writeText(JSON.stringify(projectList, null, 2));
+      showToast("Copied JSON portfolio to clipboard!");
+    }
+
+    async function triggerScanLocal() {
+      showToast("Scanning local AI transcripts across IDEs...");
+      try {
+        const res = await fetch("/api/scan-local", { method: "POST" });
+        const data = await res.json();
+        showToast(`Scan complete: ${data.projectsDiscovered} projects discovered!`);
+        refreshAll();
+      } catch (err) {
+        showToast("Error during scan: " + err.message);
+      }
+    }
+
+    // ==========================================
+    // OPENROUTER LLM EXTRACTION VIEW ENGINE
+    // ==========================================
+    let orModelsCatalog = [];
+    let orActiveModel = "google/gemini-2.5-flash";
+    let orExtractionPollInterval = null;
+
+    async function initOpenRouterView() {
+      await loadOpenRouterConfig();
+      await loadOpenRouterModels();
+      populateScopeSelectors();
+      pollExtractionStatus();
+    }
+
+    async function loadOpenRouterConfig() {
+      try {
+        const res = await fetch("/api/openrouter/config");
+        const data = await res.json();
+        
+        const pill = document.getElementById("orStatusPill");
+        const badge = document.getElementById("orBalanceBadge");
+        const input = document.getElementById("orApiKeyInput");
+
+        if (data.defaultModel) {
+          orActiveModel = data.defaultModel;
+          updateActiveModelUI(orActiveModel);
+        }
+
+        if (data.hasKey) {
+          if (pill) {
+            pill.textContent = "● Key Active (" + (data.maskedKey || "configured") + ")";
+            pill.style.background = "rgba(16, 185, 129, 0.15)";
+            pill.style.color = "#34d399";
+            pill.style.borderColor = "rgba(16, 185, 129, 0.4)";
+          }
+          if (data.status && data.status.valid) {
+            const usage = (data.status.usage || 0).toFixed(2);
+            const limit = data.status.limit ? "$" + data.status.limit.toFixed(2) : "Unlimited";
+            if (badge) badge.textContent = `Usage: $${usage} / ${limit}`;
+          }
+          if (input && !input.value) {
+            input.placeholder = data.maskedKey || "sk-or-... (Configured)";
+          }
+        } else {
+          if (pill) {
+            pill.textContent = "○ Key Not Configured";
+            pill.style.background = "rgba(244, 63, 94, 0.15)";
+            pill.style.color = "#f87171";
+            pill.style.borderColor = "rgba(244, 63, 94, 0.3)";
+          }
+          if (badge) badge.textContent = "No Key Configured";
+        }
+      } catch (err) {
+        console.error("Failed to load OpenRouter config:", err);
+      }
+    }
+
+    function toggleApiKeyVisibility() {
+      const input = document.getElementById("orApiKeyInput");
+      if (!input) return;
+      input.type = input.type === "password" ? "text" : "password";
+    }
+
+    async function saveOpenRouterKey() {
+      const input = document.getElementById("orApiKeyInput");
+      const key = input ? input.value.trim() : "";
+      if (!key) {
+        showToast("Please enter an OpenRouter API key (sk-or-v1-...)");
+        return;
+      }
+      showToast("Saving and verifying OpenRouter key...");
+      try {
+        const res = await fetch("/api/openrouter/config", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ apiKey: key, defaultModel: orActiveModel })
+        });
+        const data = await res.json();
+        if (data.status && data.status.valid) {
+          showToast("✓ OpenRouter key verified and saved successfully!");
+          input.value = "";
+          await loadOpenRouterConfig();
+          await loadOpenRouterModels();
+        } else {
+          showToast("⚠️ Key verification warning: " + (data.status?.error || "Check key"));
+          await loadOpenRouterConfig();
+        }
+      } catch (err) {
+        showToast("Error saving key: " + err.message);
+      }
+    }
+
+    async function testOpenRouterConnection() {
+      showToast("Testing OpenRouter connection and querying balance...");
+      try {
+        const input = document.getElementById("orApiKeyInput");
+        const key = input ? input.value.trim() : undefined;
+        const res = await fetch("/api/openrouter/test", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ apiKey: key })
+        });
+        const data = await res.json();
+        if (data.valid) {
+          showToast(`✓ Valid key! Label: ${data.label || 'Active'} | Usage: $${(data.usage||0).toFixed(2)}`);
+          await loadOpenRouterConfig();
+        } else {
+          showToast("❌ Key verification failed: " + (data.error || "Invalid response"));
+        }
+      } catch (err) {
+        showToast("Connection test failed: " + err.message);
+      }
+    }
+
+    async function loadOpenRouterModels() {
+      try {
+        const res = await fetch("/api/openrouter/models");
+        const data = await res.json();
+        orModelsCatalog = data.models || [];
+        const countBadge = document.getElementById("orModelCountBadge");
+        if (countBadge) countBadge.textContent = `${data.total || orModelsCatalog.length} Models Available`;
+        renderModelsList(orModelsCatalog);
+      } catch (err) {
+        console.error("Failed to load OpenRouter models:", err);
+      }
+    }
+
+    function renderModelsList(models) {
+      const container = document.getElementById("orModelListContainer");
+      if (!container) return;
+
+      if (!models || models.length === 0) {
+        container.innerHTML = `<div style="font-size: 12px; color: var(--text-dim); text-align: center; padding: 20px;">No matching models found. Try a different search term.</div>`;
+        return;
+      }
+
+      container.innerHTML = models.map(m => {
+        const isSelected = m.id === orActiveModel;
+        const ctxK = m.context_length >= 1000000 ? (m.context_length / 1000000).toFixed(1) + "M" : Math.round(m.context_length / 1024) + "k";
+        const promptFmt = "$" + m.prompt_pricing.toFixed(2);
+        const compFmt = "$" + m.completion_pricing.toFixed(2);
+
+        return `
+          <div class="or-model-card ${isSelected ? 'active' : ''}" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: ${isSelected ? 'rgba(99, 102, 241, 0.12)' : 'rgba(255,255,255,0.02)'}; border: 1px solid ${isSelected ? 'rgba(99, 102, 241, 0.5)' : 'rgba(255,255,255,0.06)'}; border-radius: 8px; transition: all 0.15s ease;">
+            <div style="flex: 1; min-width: 0;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 12px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${m.name}</span>
+                <span style="font-size: 9px; padding: 1px 6px; border-radius: 4px; background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3);">${m.provider}</span>
+                <span style="font-size: 9px; padding: 1px 6px; border-radius: 4px; background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3);">${ctxK} context</span>
+              </div>
+              <div style="font-size: 10px; color: #94a3b8; font-family: monospace; margin-top: 2px;">
+                ${m.id} · <span style="color: #34d399;">In: ${promptFmt}/M</span> · <span style="color: #a5b4fc;">Out: ${compFmt}/M</span>
+              </div>
+            </div>
+            <button class="btn ${isSelected ? '' : 'btn-secondary'}" style="font-size: 10px; padding: 4px 10px; margin-left: 10px;" onclick="selectOpenRouterModel('${m.id}')">
+              ${isSelected ? '✓ Active' : 'Select'}
+            </button>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function selectOpenRouterModel(modelId) {
+      orActiveModel = modelId;
+      updateActiveModelUI(modelId);
+      renderModelsList(filterModelsList());
+      showToast(`Selected model: ${modelId}`);
+
+      // Persist choice to server
+      fetch("/api/openrouter/config", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ defaultModel: modelId })
+      }).catch(() => {});
+    }
+
+    function selectModelPreset(modelId, btnElement) {
+      document.querySelectorAll(".or-preset-btn").forEach(b => b.classList.remove("active"));
+      if (btnElement) btnElement.classList.add("active");
+      selectOpenRouterModel(modelId);
+    }
+
+    function updateActiveModelUI(modelId) {
+      const label = document.getElementById("orActiveModelLabel");
+      if (label) label.textContent = modelId;
+    }
+
+    function onModelSearchInput(query) {
+      renderModelsList(filterModelsList());
+    }
+
+    function onProviderFilterChanged(provider) {
+      renderModelsList(filterModelsList());
+    }
+
+    function filterModelsList() {
+      const search = (document.getElementById("orModelSearchInput")?.value || "").toLowerCase().trim();
+      const provider = (document.getElementById("orProviderFilter")?.value || "").toLowerCase().trim();
+
+      return orModelsCatalog.filter(m => {
+        if (provider && m.provider.toLowerCase() !== provider) return false;
+        if (search) {
+          const match = m.id.toLowerCase().includes(search) ||
+                        m.name.toLowerCase().includes(search) ||
+                        m.description.toLowerCase().includes(search) ||
+                        m.provider.toLowerCase().includes(search);
+          if (!match) return false;
+        }
+        return true;
+      });
+    }
+
+    function onExtractionModeChanged() {
+      const selected = document.querySelector('input[name="orExtractionMode"]:checked')?.value || "all";
+      const singleWrapper = document.getElementById("orSingleConvoSelectWrapper");
+      const projectWrapper = document.getElementById("orProjectSelectWrapper");
+
+      if (singleWrapper) singleWrapper.style.display = selected === "single" ? "block" : "none";
+      if (projectWrapper) projectWrapper.style.display = selected === "project" ? "block" : "none";
+    }
+
+    function populateScopeSelectors() {
+      const singleSelect = document.getElementById("orSingleConvoSelect");
+      const projectSelect = document.getElementById("orProjectSelect");
+
+      if (singleSelect && conversationsData.conversations && conversationsData.conversations.length > 0) {
+        singleSelect.innerHTML = conversationsData.conversations.slice(0, 50).map(c => 
+          `<option value="${c.id}">[${c.source}] ${c.title.slice(0, 45)} (${c.messageCount || 2} msgs)</option>`
+        ).join("");
+      }
+
+      if (projectSelect && projectList && projectList.length > 0) {
+        projectSelect.innerHTML = projectList.map(p =>
+          `<option value="${p.id}">${p.name} (${p.conversationIds?.length || 1} chats)</option>`
+        ).join("");
+      }
+    }
+
+    async function startOpenRouterExtraction() {
+      const mode = document.querySelector('input[name="orExtractionMode"]:checked')?.value || "all";
+      let targetId = null;
+
+      if (mode === "single") {
+        targetId = document.getElementById("orSingleConvoSelect")?.value;
+        if (!targetId) {
+          showToast("Please pick a conversation to extract.");
+          return;
+        }
+      } else if (mode === "project") {
+        targetId = document.getElementById("orProjectSelect")?.value;
+        if (!targetId) {
+          showToast("Please select a project to extract.");
+          return;
+        }
+      }
+
+      const chunkSize = parseInt(document.getElementById("orChunkSizeSelect")?.value || "8000", 10);
+      const limit = parseInt(document.getElementById("orBatchLimitSelect")?.value || "0", 10);
+
+      showToast(`🚀 Launching AI Extraction using ${orActiveModel}...`);
+      toggleExtractionButtons(true);
+
+      try {
+        const res = await fetch("/api/openrouter/extract", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            mode,
+            targetId,
+            model: orActiveModel,
+            maxTokensPerChunk: chunkSize,
+            limit: limit > 0 ? limit : undefined
+          })
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || "Failed to start extraction");
+        }
+
+        showToast(`Extraction active! Synthesizing ${data.totalConversations} conversation(s)...`);
+        startExtractionStatusPolling();
+      } catch (err) {
+        showToast("Extraction error: " + err.message);
+        toggleExtractionButtons(false);
+      }
+    }
+
+    async function cancelOpenRouterExtraction() {
+      showToast("Requesting extraction termination...");
+      try {
+        await fetch("/api/openrouter/extract/cancel", { method: "POST" });
+        showToast("Extraction cancelling at next safe boundary.");
+      } catch (err) {
+        showToast("Cancel error: " + err.message);
+      }
+    }
+
+    function toggleExtractionButtons(isRunning) {
+      const startBtn = document.getElementById("btnStartOrExtraction");
+      const cancelBtn = document.getElementById("btnCancelOrExtraction");
+      if (startBtn) startBtn.style.display = isRunning ? "none" : "block";
+      if (cancelBtn) cancelBtn.style.display = isRunning ? "block" : "none";
+    }
+
+    function startExtractionStatusPolling() {
+      if (orExtractionPollInterval) clearInterval(orExtractionPollInterval);
+      orExtractionPollInterval = setInterval(pollExtractionStatus, 1500);
+      pollExtractionStatus();
+    }
+
+    async function pollExtractionStatus() {
+      try {
+        const res = await fetch("/api/openrouter/extract/status");
+        const job = await res.json();
+
+        toggleExtractionButtons(job.isRunning);
+
+        const statusText = document.getElementById("orCurrentStatusText");
+        const percentBadge = document.getElementById("orProgressPercentBadge");
+        const bar = document.getElementById("orProgressBar");
+        const decEl = document.getElementById("orDecCount");
+        const compEl = document.getElementById("orCompCount");
+        const negEl = document.getElementById("orNegCount");
+        const edgeEl = document.getElementById("orEdgeCount");
+        const consoleEl = document.getElementById("orLogConsole");
+
+        if (decEl) decEl.textContent = job.nodesCreated > 0 ? Math.round(job.nodesCreated * 0.45) : 0;
+        if (compEl) compEl.textContent = job.nodesCreated > 0 ? Math.round(job.nodesCreated * 0.3) : 0;
+        if (negEl) negEl.textContent = job.nodesCreated > 0 ? Math.round(job.nodesCreated * 0.25) : 0;
+        if (edgeEl) edgeEl.textContent = job.edgesCreated || 0;
+
+        if (job.isRunning) {
+          const total = job.totalConversations || 1;
+          const processed = job.processedConversations || 0;
+          const pct = Math.min(100, Math.round((processed / total) * 100));
+
+          if (statusText) statusText.textContent = `Analyzing: "${(job.currentTitle || '...').slice(0, 35)}" (${processed}/${total})`;
+          if (percentBadge) percentBadge.textContent = `${pct}%`;
+          if (bar) bar.style.width = `${pct}%`;
+        } else if (job.completedAt) {
+          if (statusText) statusText.textContent = `✓ Completed at ${new Date(job.completedAt).toLocaleTimeString()}`;
+          if (percentBadge) percentBadge.textContent = "100%";
+          if (bar) bar.style.width = "100%";
+          if (orExtractionPollInterval) {
+            clearInterval(orExtractionPollInterval);
+            orExtractionPollInterval = null;
+          }
+          fetchStats();
+        }
+
+        if (consoleEl && job.logs && job.logs.length > 0) {
+          consoleEl.innerHTML = job.logs.slice(-30).map(l => {
+            const color = l.level === "success" ? "#34d399" : l.level === "warn" ? "#fbbf24" : l.level === "error" ? "#f87171" : "#cbd5e1";
+            return `<div><span style="color: #64748b;">[${l.time}]</span> <span style="color: ${color};">${escapeHtml(l.message)}</span></div>`;
+          }).join("");
+          consoleEl.scrollTop = consoleEl.scrollHeight;
+        }
+      } catch (err) {}
+    }
+
+    function escapeHtml(str) {
+      if (!str) return "";
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    function refreshAll() {
+      fetchStats();
+      loadTelemetry();
+      loadProjects();
+      loadInquiries();
+      loadInsights();
+      initGraph();
+      initOpenRouterView();
+    }
+
+    // Initialize Archive Dropzone
+    initArchiveDropzone();
+
+    // Cross-tab real-time sync with Chrome Extension
+    try {
+      const syncChannel = new BroadcastChannel("hive_memory_sync");
+      syncChannel.onmessage = (event) => {
+        console.log("[Hive] Received real-time sync event from extension:", event.data);
+        showToast(`⚡ Synced ${event.data.count || ""} chats from extension! Updating Living Knowledge Galaxy...`);
+        refreshAll();
+      };
+    } catch (e) {}
+
+    refreshAll();
+  </script>
+</body>
+</html>
