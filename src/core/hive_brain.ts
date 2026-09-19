@@ -1,91 +1,83 @@
 import { GraphStore } from "../storage/graph_store";
-import { HiveInquiry } from "./types";
 
 export class HiveBrain {
   /**
-   * Autonomous audit cycle: scans knowledge graph and project clusters
-   * to discover architectural ambiguities, conflicting decisions, or superseded tech.
+   * Autonomous audit cycle: finds real cross-project contradictions in the
+   * knowledge graph — specifically, a technology one project explicitly
+   * rejected that another project is actively using — and files a Hive
+   * inquiry for each one not already on record.
    */
   public static auditAndSynthesize(store: GraphStore): { detectedDiscrepancies: number; newInquiries: number } {
     const projects = store.listProjects();
+    const graph = store.getFullGraph();
     const existingInquiries = store.listInquiries();
-    let newInquiriesCount = 0;
 
-    // Archetypal architectural ambiguities to check across the knowledge base
-    const potentialDiscrepancies: Omit<HiveInquiry, "createdAt" | "status">[] = [
-      {
-        id: "inq_resonance_x_quantization",
-        projectId: projects.find(p => p.name === "Resonance-X")?.id,
-        projectName: "Resonance-X",
-        category: "architecture_conflict",
-        question: "Vector Quantization Trade-off: Should ReSC+ continue using PPMI clustered similarity buckets or transition to Learned K-Means centroids?",
-        options: [
-          { 
-            id: "opt_ppmi", 
-            label: "Retain PPMI Clustered Similarity (Recommended)", 
-            details: "Guarantees deterministic <2.0s conversational generation without offline clustering re-training." 
-          },
-          { 
-            id: "opt_kmeans", 
-            label: "Migrate to Learned K-Means Centroids", 
-            details: "Provides marginally tighter semantic clusters at the expense of higher periodic retraining overhead." 
-          }
-        ],
-        context: "Detected high-frequency generation benchmarking in wiki-text runs where PPMI achieved 155.9s -> <2.0s reduction."
-      },
-      {
-        id: "inq_storage_engine_sync",
-        projectId: projects.find(p => p.name.includes("Universal AI Memory") || p.name.includes("Hive"))?.id,
-        projectName: "Universal AI Memory",
-        category: "stack_ambiguity",
-        question: "Local Vector Indexing: Enforce purely local SQLite with HMAC Blind Indexing or enable optional pgvector hybrid sync?",
-        options: [
-          {
-            id: "opt_local_sqlite",
-            label: "Purely Local SQLite + HMAC Blind Index (Recommended)",
-            details: "100% Zero-Cloud airgapped privacy. Zero external network egress."
-          },
-          {
-            id: "opt_hybrid_pgvector",
-            label: "Hybrid pgvector Sync",
-            details: "Allows remote multi-device cross-querying with client-side encrypted vectors."
-          }
-        ],
-        context: "Enterprise privacy audits require explicit user confirmation for cloud vector egress."
-      },
-      {
-        id: "inq_nsck_action_leakage",
-        projectId: projects.find(p => p.name === "NSCK")?.id,
-        projectName: "NSCK",
-        category: "architecture_conflict",
-        question: "Cognitive Action Execution: Enforce strict schema-bounded primitives or allow autonomous dynamic action discovery?",
-        options: [
-          {
-            id: "opt_strict_bounds",
-            label: "Strict Schema Primitives (Recommended)",
-            details: "Completely prevents action leakage across cognitive phases and ensures deterministic audit trails."
-          },
-          {
-            id: "opt_dynamic_actions",
-            label: "Dynamic Open-Ended Actions",
-            details: "Allows neuro-symbolic brain to synthesize new primitives on the fly with safety sandboxing."
-          }
-        ],
-        context: "Identified cognitive trace anomalies during multi-process auto-wake synchronization."
+    const projectById = new Map(projects.map(p => [`node_proj_${p.id}`, p]));
+    const nodeNameById = new Map(graph.nodes.map(n => [n.id, n.name] as const));
+    const nodeById = new Map(graph.nodes.map(n => [n.id, n] as const));
+
+    // techName (lowercase) -> set of project node ids that actively USE it
+    const usersOfTech = new Map<string, Set<string>>();
+    // techName (lowercase) -> map of rejecting project node id -> reason
+    const rejectersOfTech = new Map<string, Map<string, string>>();
+
+    for (const edge of graph.edges) {
+      if (edge.status !== "active" || !projectById.has(edge.sourceNodeId)) continue;
+
+      if (edge.relation === "USES_TECH") {
+        const techName = (nodeNameById.get(edge.targetNodeId) || "").toLowerCase().trim();
+        if (!techName) continue;
+        if (!usersOfTech.has(techName)) usersOfTech.set(techName, new Set());
+        usersOfTech.get(techName)!.add(edge.sourceNodeId);
       }
-    ];
 
-    for (const inq of potentialDiscrepancies) {
-      const alreadyExists = existingInquiries.some(e => e.id === inq.id);
-      if (!alreadyExists) {
-        store.createInquiry(inq);
-        newInquiriesCount++;
+      if (edge.relation === "REJECTED") {
+        const targetNode = nodeById.get(edge.targetNodeId);
+        if (!targetNode) continue;
+        // NegativeKnowledge node names are always "Avoid <subject>" (see extractor.ts / llm_extractor.ts)
+        const rejectedName = targetNode.name.replace(/^Avoid\s+/i, "").toLowerCase().trim();
+        if (!rejectedName) continue;
+        if (!rejectersOfTech.has(rejectedName)) rejectersOfTech.set(rejectedName, new Map());
+        rejectersOfTech.get(rejectedName)!.set(edge.sourceNodeId, edge.context || targetNode.summary || "no reason recorded");
       }
     }
 
-    return {
-      detectedDiscrepancies: potentialDiscrepancies.length,
-      newInquiries: newInquiriesCount
-    };
+    let checksRun = 0;
+    let newInquiriesCount = 0;
+
+    for (const [techName, rejecterMap] of rejectersOfTech.entries()) {
+      const userProjectIds = usersOfTech.get(techName);
+      if (!userProjectIds || userProjectIds.size === 0) continue;
+
+      for (const [rejecterId, reason] of rejecterMap.entries()) {
+        for (const userId of userProjectIds) {
+          checksRun++;
+          if (rejecterId === userId) continue; // same project rejecting+using isn't a cross-project contradiction
+
+          const rejecterProj = projectById.get(rejecterId);
+          const userProj = projectById.get(userId);
+          if (!rejecterProj || !userProj) continue;
+
+          const inquiryId = `inq_contradiction_${techName.replace(/[^a-z0-9]/g, "_")}_${rejecterProj.id}_${userProj.id}`;
+          if (existingInquiries.some(e => e.id === inquiryId)) continue;
+
+          store.createInquiry({
+            id: inquiryId,
+            projectId: userProj.id,
+            projectName: userProj.name,
+            category: "architecture_conflict",
+            question: `"${userProj.name}" actively uses ${techName}, but "${rejecterProj.name}" explicitly rejected it. Is that still the right call for "${userProj.name}"?`,
+            options: [
+              { id: "opt_keep", label: `Keep ${techName} in ${userProj.name}`, details: "The rejection recorded in the other project doesn't apply here." },
+              { id: "opt_reconsider", label: `Reconsider ${techName} in ${userProj.name}`, details: `Reason it was rejected elsewhere: ${reason}` }
+            ],
+            context: `${rejecterProj.name} rejected ${techName} (${reason}). ${userProj.name} currently uses it.`
+          });
+          newInquiriesCount++;
+        }
+      }
+    }
+
+    return { detectedDiscrepancies: checksRun, newInquiries: newInquiriesCount };
   }
 }
