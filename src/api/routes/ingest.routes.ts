@@ -190,6 +190,10 @@ async function runLlmEnrichment(
         llmNodesCreated += nodes.length;
       } catch (err: any) {
         console.warn(`[Hive] LLM enrichment failed for "${convo.title}": ${err.message}`);
+        if (err.statusCode === 401 || err.statusCode === 402 || /401|402|credits/i.test(err.message)) {
+          console.warn(`[Hive] OpenRouter credit limit or auth failure encountered — halting remaining LLM pass.`);
+          return { ranLlmPass: false, llmNodesCreated };
+        }
       }
     }
   }

@@ -146,6 +146,7 @@ Extract all real decisions, components, negative knowledge (things rejected/avoi
       model: options.model,
       temperature: 0.1,
       jsonMode: true,
+      maxTokens: 4096,
       messages: [
         { role: "system", content: this.SYSTEM_PROMPT },
         { role: "user", content: userPrompt }

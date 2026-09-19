@@ -23,20 +23,30 @@ async function runLlmEnrichment(
   substantial: import("./core/types").CanonicalConversation[],
   projects: import("./core/types").ProjectCluster[]
 ): Promise<{ ranLlmPass: boolean; llmNodesCreated: number }> {
+  if (process.env.SKIP_LLM === "true" || process.env.NO_LLM === "true" || process.argv.includes("--no-llm") || process.argv.includes("--skip-llm")) {
+    console.log(`[i] LLM enrichment skipped via flag/environment.`);
+    return { ranLlmPass: false, llmNodesCreated: 0 };
+  }
+
   const apiKey = OpenRouterClient.getActiveKey();
   if (!apiKey) {
     console.log(`[i] No OPENROUTER_API_KEY configured — skipping LLM enrichment pass (regex-based extraction above is still saved).`);
     return { ranLlmPass: false, llmNodesCreated: 0 };
   }
 
-  console.log(`[+] OPENROUTER_API_KEY found — running LLM enrichment pass with ${config.OPENROUTER_DEFAULT_MODEL}...`);
+  console.log(`[+] OPENROUTER_API_KEY found — running LLM enrichment pass with ${config.OPENROUTER_DEFAULT_MODEL} (${substantial.length} conversations)...`);
   let llmNodesCreated = 0;
   const projectByConvoId = new Map<string, import("./core/types").ProjectCluster>();
   for (const p of projects) {
     for (const cid of p.conversationIds) projectByConvoId.set(cid, p);
   }
 
+  let convoIndex = 0;
   for (const convo of substantial) {
+    convoIndex++;
+    if (convoIndex % 10 === 1 || convoIndex === substantial.length) {
+      console.log(`[+] LLM enrichment progress: ${convoIndex}/${substantial.length} conversations (${llmNodesCreated} nodes created so far)...`);
+    }
     const project = projectByConvoId.get(convo.id);
     const chunks = ConversationChunker.chunkConversation(convo);
 
@@ -57,6 +67,10 @@ async function runLlmEnrichment(
         llmNodesCreated += nodes.length;
       } catch (err: any) {
         console.warn(`[!] LLM enrichment failed for "${convo.title}" (chunk ${chunk.chunkIndex}/${chunk.totalChunks}): ${err.message}. Continuing — regex-based extraction is already saved.`);
+        if (err.statusCode === 401 || err.statusCode === 402 || /401|402|credits/i.test(err.message)) {
+          console.warn(`[!] OpenRouter credit limit or auth failure encountered — halting remaining LLM pass. All local conversations and graph structures are already indexed.`);
+          return { ranLlmPass: false, llmNodesCreated };
+        }
       }
     }
   }

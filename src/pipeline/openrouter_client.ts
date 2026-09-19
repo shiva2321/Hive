@@ -242,7 +242,13 @@ export class OpenRouterClient {
 
         if (!res.ok) {
           const errBody = await res.text();
-          throw new Error(`OpenRouter Error (${res.status}): ${errBody}`);
+          const err = new Error(`OpenRouter Error (${res.status}): ${errBody}`);
+          (err as any).statusCode = res.status;
+          // Fatal client errors should never be retried
+          if (res.status >= 400 && res.status < 500 && res.status !== 429) {
+            throw err;
+          }
+          throw err;
         }
 
         const data = await res.json() as any;
@@ -253,6 +259,10 @@ export class OpenRouterClient {
 
         return reply;
       } catch (err: any) {
+        // Do not retry fatal client errors like 401/402
+        if (err.statusCode && err.statusCode >= 400 && err.statusCode < 500 && err.statusCode !== 429) {
+          throw err;
+        }
         if (attempts >= maxAttempts) {
           throw err;
         }
