@@ -10,7 +10,8 @@ export interface AuthenticatedRequest extends Request {
 
 export function authMiddleware(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   // Allow health checks and public static UI assets without auth
-  if (req.path.startsWith("/healthz") || req.path === "/" || req.path.endsWith(".html") || req.path.endsWith(".js") || req.path.endsWith(".css")) {
+  const urlPath = (req.originalUrl || req.path).split("?")[0];
+  if (urlPath.startsWith("/healthz") || urlPath === "/" || urlPath.endsWith(".html") || urlPath.endsWith(".js") || urlPath.endsWith(".css")) {
     return next();
   }
 

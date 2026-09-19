@@ -37,6 +37,11 @@ spec:
             secretKeyRef:
               name: uam-secrets
               key: master-key
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: uam-secrets
+              key: jwt-secret
         resources:
           limits:
             cpu: "1000m"

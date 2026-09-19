@@ -206,24 +206,29 @@ export function createEnterpriseApp(): express.Express {
   app.use("/api/v1/projects", authMiddleware, projectRoutes);
   app.use("/api/v1/graph", authMiddleware, graphRoutes);
 
-  // Backward compatibility alias for local dashboard & extension
-  app.use("/api/stats", (req, res) => {
+  // Legacy unversioned aliases used by the local dashboard & extension.
+  // These now go through authMiddleware, same as /api/v1/*. In local dev
+  // (NODE_ENV != production, the default) authMiddleware auto-admits every
+  // request, so nothing changes for you locally. In production, these now
+  // actually require the same auth as the versioned routes instead of being
+  // a wide-open duplicate of them.
+  app.use("/api/stats", authMiddleware, (req, res) => {
     const store = DatabaseManager.getLocalStore();
     res.json(store.getStats());
   });
-  app.use("/api/projects", (req, res) => {
+  app.use("/api/projects", authMiddleware, (req, res) => {
     const store = DatabaseManager.getLocalStore();
     res.json(store.listProjects());
   });
-  app.use("/api/graph", (req, res) => {
+  app.use("/api/graph", authMiddleware, (req, res) => {
     const store = DatabaseManager.getLocalStore();
     res.json(store.getFullGraph());
   });
-  app.use("/api/insights", (req, res) => {
+  app.use("/api/insights", authMiddleware, (req, res) => {
     const store = DatabaseManager.getLocalStore();
     res.json(store.getInsights());
   });
-  app.use("/api/inquiries", (req, res) => {
+  app.use("/api/inquiries", authMiddleware, (req, res) => {
     const store = DatabaseManager.getLocalStore();
     if (req.method === "GET") {
       const status = req.query.status as string | undefined;
@@ -231,9 +236,9 @@ export function createEnterpriseApp(): express.Express {
     }
     res.status(405).json({ error: "Method not allowed" });
   });
-  app.post("/api/inquiries/:id/resolve", (req, res) => {
+  app.post("/api/inquiries/:id/resolve", authMiddleware, (req, res) => {
     const store = DatabaseManager.getLocalStore();
-    const { id } = req.params;
+    const id = String(req.params.id);
     const { resolution, chosenOptionId } = req.body;
     if (!resolution) {
       return res.status(400).json({ error: "Missing required parameter: resolution" });
@@ -244,7 +249,7 @@ export function createEnterpriseApp(): express.Express {
     }
     res.json(result);
   });
-  app.use("/api/conversations", (req, res) => {
+  app.use("/api/conversations", authMiddleware, (req, res) => {
     const store = DatabaseManager.getLocalStore();
     if (req.path && req.path.length > 1) {
       const id = req.path.replace(/^\//, "");
@@ -258,12 +263,12 @@ export function createEnterpriseApp(): express.Express {
     const q = req.query.q as string | undefined;
     res.json(store.listConversations(page, limit, provider, q));
   });
-  app.use("/api/telemetry", (req, res) => {
+  app.use("/api/telemetry", authMiddleware, (req, res) => {
     const store = DatabaseManager.getLocalStore();
     res.json(store.getTelemetry());
   });
-  app.use("/api/openrouter", openrouterRoutes);
-  app.use("/api/ingest", ingestRoutes);
+  app.use("/api/openrouter", authMiddleware, openrouterRoutes);
+  app.use("/api/ingest", authMiddleware, ingestRoutes);
 
   // Centralized Error Handler
   app.use(errorHandler);
