@@ -9,6 +9,61 @@ import { GraphStore } from "./storage/graph_store";
 import { ContextGenerator } from "./serving/context_generator";
 import { LocalIDEParser } from "./ingestion/parsers/local_ide_parser";
 import { OmniScanner } from "./ingestion/omni_scanner";
+import { ConversationChunker } from "./pipeline/chunker";
+import { LlmExtractor } from "./pipeline/llm_extractor";
+import { OpenRouterClient } from "./pipeline/openrouter_client";
+import { config } from "./config/env";
+
+/**
+ * Runs each substantial conversation through the real LLM extraction pipeline
+ * (llm_extractor.ts) as an enrichment pass on top of the fast regex extractor.
+ * No-ops cleanly if no OpenRouter key is configured.
+ */
+async function runLlmEnrichment(
+  substantial: import("./core/types").CanonicalConversation[],
+  projects: import("./core/types").ProjectCluster[]
+): Promise<{ ranLlmPass: boolean; llmNodesCreated: number }> {
+  const apiKey = OpenRouterClient.getActiveKey();
+  if (!apiKey) {
+    console.log(`[i] No OPENROUTER_API_KEY configured — skipping LLM enrichment pass (regex-based extraction above is still saved).`);
+    return { ranLlmPass: false, llmNodesCreated: 0 };
+  }
+
+  console.log(`[+] OPENROUTER_API_KEY found — running LLM enrichment pass with ${config.OPENROUTER_DEFAULT_MODEL}...`);
+  let llmNodesCreated = 0;
+  const projectByConvoId = new Map<string, import("./core/types").ProjectCluster>();
+  for (const p of projects) {
+    for (const cid of p.conversationIds) projectByConvoId.set(cid, p);
+  }
+
+  for (const convo of substantial) {
+    const project = projectByConvoId.get(convo.id);
+    const chunks = ConversationChunker.chunkConversation(convo);
+
+    for (const chunk of chunks) {
+      try {
+        const payload = await LlmExtractor.extractFromChunk(chunk, {
+          apiKey,
+          model: config.OPENROUTER_DEFAULT_MODEL,
+          projectId: project?.id,
+          projectName: project?.name
+        });
+        const { nodes } = LlmExtractor.ingestPayload(payload, {
+          conversationId: convo.id,
+          conversationTitle: convo.title,
+          projectId: project?.id,
+          projectName: project?.name
+        });
+        llmNodesCreated += nodes.length;
+      } catch (err: any) {
+        console.warn(`[!] LLM enrichment failed for "${convo.title}" (chunk ${chunk.chunkIndex}/${chunk.totalChunks}): ${err.message}. Continuing — regex-based extraction is already saved.`);
+      }
+    }
+  }
+
+  console.log(`[✓] LLM enrichment pass complete: ${llmNodesCreated} additional nodes created.`);
+  return { ranLlmPass: true, llmNodesCreated };
+}
 
 async function main() {
   const args = process.argv.slice(2);
@@ -63,6 +118,8 @@ Usage:
       console.log(`    - Nodes: ${extraction.nodes.length}`);
       console.log(`    - Relations: ${extraction.edges.length}`);
       console.log(`    - Behavioral Insights: ${extraction.insights.length}`);
+
+      await runLlmEnrichment(substantial, projects);
       break;
     }
 
@@ -87,6 +144,8 @@ Usage:
         store.saveGraph(extraction.nodes, extraction.edges);
         store.saveInsights(extraction.insights);
         console.log(`[✓] Indexed ${projects.length} projects, ${extraction.nodes.length} knowledge nodes, and ${extraction.edges.length} graph relations!`);
+
+        await runLlmEnrichment(substantial, projects);
       }
       break;
     }
