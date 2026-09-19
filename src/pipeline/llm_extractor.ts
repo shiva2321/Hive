@@ -4,43 +4,60 @@ import { ConversationChunk, ConversationChunker } from "./chunker";
 import { OpenRouterClient } from "./openrouter_client";
 import { DatabaseManager } from "../db/postgres_pool";
 
+// Robust coerce helpers for LLM output tolerance
+const safeStr = (fallback = "") =>
+  z.preprocess((val) => (val === null || val === undefined ? fallback : String(val).trim()), z.string().default(fallback));
+
+const safeNum = (fallback = 0.9) =>
+  z.preprocess((val) => {
+    if (typeof val === "number" && !isNaN(val)) return Math.max(0, Math.min(1, val));
+    const parsed = parseFloat(String(val));
+    return isNaN(parsed) ? fallback : Math.max(0, Math.min(1, parsed));
+  }, z.number().default(fallback));
+
+const safeStrArray = () =>
+  z.preprocess(
+    (val) => (Array.isArray(val) ? val.filter((x) => x !== null && x !== undefined).map(String) : []),
+    z.array(z.string()).default([])
+  );
+
 // Zod Validation Schema for LLM Response
 export const LlmExtractionSchema = z.object({
   decisions: z.array(z.object({
-    title: z.string(),
-    inquiry: z.string().optional(),
-    rationale: z.string(),
-    chosenSolution: z.string(),
-    alternativesConsidered: z.array(z.string()).default([]),
-    confidence: z.number().min(0).max(1).default(0.95)
+    title: safeStr("Untitled Decision"),
+    inquiry: safeStr(""),
+    rationale: safeStr(""),
+    chosenSolution: safeStr(""),
+    alternativesConsidered: safeStrArray(),
+    confidence: safeNum(0.95)
   })).default([]),
 
   patternsAndComponents: z.array(z.object({
-    name: z.string(),
-    type: z.string().default("ArchitecturePattern"),
-    summary: z.string().default(""),
-    techStack: z.array(z.string()).default([]),
-    confidence: z.number().min(0).max(1).default(0.9)
+    name: safeStr("Unnamed Component"),
+    type: safeStr("ArchitecturePattern"),
+    summary: safeStr(""),
+    techStack: safeStrArray(),
+    confidence: safeNum(0.9)
   })).default([]),
 
   negativeKnowledge: z.array(z.object({
-    subject: z.string(),
-    reason: z.string(),
-    alternativeRecommended: z.string().optional(),
-    confidence: z.number().min(0).max(1).default(0.9)
+    subject: safeStr("Avoidance"),
+    reason: safeStr("No reason recorded"),
+    alternativeRecommended: safeStr(""),
+    confidence: safeNum(0.9)
   })).default([]),
 
   entities: z.array(z.object({
-    name: z.string(),
-    type: z.string().default("Concept"),
-    description: z.string().default("")
+    name: safeStr("Concept"),
+    type: safeStr("Concept"),
+    description: safeStr("")
   })).default([]),
 
   relationships: z.array(z.object({
-    source: z.string(),
-    target: z.string(),
-    relation: z.string().default("USES_TECH"),
-    explanation: z.string().default("")
+    source: safeStr(""),
+    target: safeStr(""),
+    relation: safeStr("USES_TECH"),
+    explanation: safeStr("")
   })).default([])
 });
 

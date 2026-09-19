@@ -21,7 +21,7 @@ router.get("/query", (req: AuthenticatedRequest, res) => {
   const term = (req.query.q as string) || "";
   if (!term.trim()) {
     return res.status(400).json({
-      type: "https://api.universalmemory.ai/errors/bad-request",
+      type: "urn:hive:error:bad-request",
       title: "Query Parameter Required",
       status: 400,
       detail: "Query parameter 'q' is required."

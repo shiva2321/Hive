@@ -53,11 +53,11 @@ Most developers use multiple AI assistants simultaneously — ChatGPT for ideati
 | Source | Method | Details |
 |--------|---------|---------|
 | **ChatGPT** | Export ZIP + Live Extension | `conversations.json` bulk import or real-time Chrome sync |
-| **Claude** | Export ZIP + Live Extension | `claude.ai` conversation export or live capture |
-| **Gemini** | Google Takeout + Live Extension | `gemini.google.com` live capture |
-| **Cursor** | Local file scanner | Auto-detects `~/.cursor/chat_history/` |
-| **Antigravity** | Local file scanner | Scans Antigravity IDE conversation transcripts |
-| **Claude Code** | Local file scanner | Reads `~/.claude/` JSONL session logs |
+| **Claude** | Export ZIP + Live Extension | `claude.ai` conversation export or live tree extraction |
+| **Gemini** | Takeout + Live Extension | `gemini.google.com` live capture + sequential full-history backfill |
+| **Cursor** | SQLite State + Plan Scanner | Reads `state.vscdb` (`cursorDiskKV` composer sessions & chat bubbles), `.plan.md` plans, and `agent-transcripts/*.jsonl` |
+| **Antigravity** | Local file scanner | Scans session `.md` brain notes and `.system_generated/logs/transcript.jsonl` |
+| **Claude Code** | Local file scanner | Reads `~/.claude/` JSONL session logs & project memory files |
 | **VS Code / Copilot** | Local file scanner | Extension activity logs |
 | **JetBrains AI** | Local file scanner | AI Assistant conversation exports |
 | **DeepSeek, Grok, Perplexity, OpenCode, Zed** | Bulk import | Generic JSONL/JSON parser |
@@ -139,8 +139,8 @@ The `HiveBrain` autonomous audit engine runs continuously in the background. It:
 ### 1. Install
 
 ```bash
-git clone https://github.com/your-org/universal-ai-memory
-cd universal-ai-memory
+git clone https://github.com/shiva2321/Hive
+cd Hive
 npm install
 npm run build
 ```
@@ -230,6 +230,7 @@ For **Cursor** (`~/.cursor/mcp.json`), **Antigravity**, or **VS Code** (Copilot 
 # ── Ingestion ────────────────────────────────────────────────────────────────
 npm run cli import <path>        # Import a zip, json, or jsonl export file
 npm run cli scan-local           # Scan all local IDE/agent transcript paths
+npm run cli scan-local --no-llm  # Fast scan with regex extraction (skips LLM pass)
 
 # ── Inspection ───────────────────────────────────────────────────────────────
 npm run cli projects             # List all auto-detected project clusters
@@ -378,10 +379,12 @@ universal-ai-memory/
 npm test                    # Core unit + integration tests
 npm run test:enterprise     # Enterprise security & multi-tenant tests
 npm run test:mcp            # MCP tool invocation tests
-npm run test:all            # Full suite
+npm run test:encryption     # AES-256-GCM record-level persistence & roundtrip tests
+npm run test:all            # Full test suite (all suites combined)
+npx tsc --noEmit            # TypeScript type checking
 ```
 
-Coverage: sanitization, per-provider parsing, ephemeral noise filtering, project clustering, graph storage, rule generation, and MCP tool responses.
+Coverage: sanitization, per-provider parsing, ephemeral noise filtering, project clustering, graph storage, AES-256-GCM encryption roundtrips, rule generation, and MCP tool responses.
 
 ---
 

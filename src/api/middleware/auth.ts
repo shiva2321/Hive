@@ -29,7 +29,7 @@ export function authMiddleware(req: AuthenticatedRequest, res: Response, next: N
       return next();
     } catch (err) {
       return res.status(401).json({
-        type: "https://api.universalmemory.ai/errors/unauthorized",
+        type: "urn:hive:error:unauthorized",
         title: "Unauthorized",
         status: 401,
         detail: "Invalid or expired JWT bearer token."
@@ -58,7 +58,7 @@ export function authMiddleware(req: AuthenticatedRequest, res: Response, next: N
   }
 
   return res.status(401).json({
-    type: "https://api.universalmemory.ai/errors/unauthorized",
+    type: "urn:hive:error:unauthorized",
     title: "Authentication Required",
     status: 401,
     detail: "Missing Authorization header or X-API-Key."

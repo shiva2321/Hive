@@ -37,7 +37,7 @@ export function rateLimiter(req: Request, res: Response, next: NextFunction) {
 
   if (bucket.tokens < 1) {
     return res.status(429).json({
-      type: "https://api.universalmemory.ai/errors/rate-limit-exceeded",
+      type: "urn:hive:error:rate-limit-exceeded",
       title: "Too Many Requests",
       status: 429,
       detail: `Rate limit of ${limit} requests per minute exceeded. Please retry after ${Math.ceil((bucket.lastRefill + windowMs - now) / 1000)} seconds.`

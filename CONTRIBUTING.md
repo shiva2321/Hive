@@ -1,12 +1,12 @@
-﻿# Contributing to Hive
+# Contributing to Hive
 
 Thank you for your interest in contributing! Here is how to get started.
 
 ## Development Setup
 
 ```bash
-git clone https://github.com/your-org/universal-ai-memory
-cd universal-ai-memory
+git clone https://github.com/shiva2321/Hive
+cd Hive
 npm install
 ```
 

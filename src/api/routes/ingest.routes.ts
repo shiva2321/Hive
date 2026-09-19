@@ -11,7 +11,10 @@ import { DatabaseManager } from "../../db/postgres_pool";
 import { ConversationChunker } from "../../pipeline/chunker";
 import { LlmExtractor } from "../../pipeline/llm_extractor";
 import { OpenRouterClient } from "../../pipeline/openrouter_client";
+import { SecretSanitizer } from "../../ingestion/sanitizer";
+import { CanonicalConversation, CanonicalMessage } from "../../core/types";
 import { config } from "../../config/env";
+import AdmZip from "adm-zip";
 
 const router = Router();
 const queue = IngestionQueue.getInstance();
@@ -23,7 +26,7 @@ router.post("/async", (req: AuthenticatedRequest, res) => {
 
   if (!payload && !filePath) {
     return res.status(400).json({
-      type: "https://api.universalmemory.ai/errors/bad-request",
+      type: "urn:hive:error:bad-request",
       title: "Bad Request",
       status: 400,
       detail: "Either 'payload' or 'filePath' must be provided in request body."
@@ -55,7 +58,7 @@ router.get("/jobs/:jobId", (req: AuthenticatedRequest, res) => {
   const job = queue.getJob(jobId);
   if (!job) {
     return res.status(404).json({
-      type: "https://api.universalmemory.ai/errors/not-found",
+      type: "urn:hive:error:not-found",
       title: "Not Found",
       status: 404,
       detail: `Job with ID '${jobId}' was not found.`
@@ -64,9 +67,6 @@ router.get("/jobs/:jobId", (req: AuthenticatedRequest, res) => {
 
   res.json(job);
 });
-
-import AdmZip from "adm-zip";
-import { CanonicalConversation } from "../../core/types";
 
 function parseTextChat(content: string, filename: string): CanonicalConversation | null {
   const lines = content.split(/\r?\n/);
@@ -253,13 +253,23 @@ async function processAndIngestConversations(rawData: any) {
 
     if (messages.length === 0) continue;
 
+    // Server-side secret sanitization on all incoming messages regardless of origin
+    const sanitizedMessages: CanonicalMessage[] = messages.map(m => {
+      const sanitized = SecretSanitizer.sanitize(m.content || "");
+      return {
+        ...m,
+        content: sanitized.cleanedText,
+        tokenCountEst: Math.ceil(sanitized.cleanedText.length / 4)
+      };
+    });
+
     const match = existingMap.get(id) ||
                   existingMap.get(`${source}:${sourceId}`) ||
                   existingMap.get(`${source}:${title.toLowerCase()}`);
 
     if (match) {
       const existingCount = match.messages ? match.messages.length : 0;
-      if (messages.length > existingCount) {
+      if (sanitizedMessages.length > existingCount) {
         const updatedConvo: CanonicalConversation = {
           id: match.id,
           source: (source as any) || "claude",
@@ -267,7 +277,7 @@ async function processAndIngestConversations(rawData: any) {
           title,
           createdAt: match.createdAt || createdAt,
           updatedAt: new Date().toISOString(),
-          messages,
+          messages: sanitizedMessages,
           metadata: item.metadata || match.metadata || {}
         };
         toSave.push(updatedConvo);
@@ -284,7 +294,7 @@ async function processAndIngestConversations(rawData: any) {
         title,
         createdAt,
         updatedAt,
-        messages,
+        messages: sanitizedMessages,
         metadata: item.metadata || {}
       };
       toSave.push(newConvo);

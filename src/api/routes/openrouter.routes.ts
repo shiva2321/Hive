@@ -283,8 +283,14 @@ router.post("/extract", async (req: Request, res: Response) => {
             }
           } catch (chunkErr: any) {
             addLog("error", `Error processing chunk in "${convo.title.slice(0, 30)}": ${chunkErr.message}`);
+            if (chunkErr.statusCode === 402 || /402|insufficient credits|credits/i.test(chunkErr.message)) {
+              addLog("warn", `⚠️ OpenRouter credits exhausted ($0.00 remaining balance). Halting extraction early. All ${activeJob.nodesCreated} nodes extracted so far are safely saved in your Knowledge Graph.`);
+              activeJob.cancelRequested = true;
+              break;
+            }
           }
         }
+        if (activeJob.cancelRequested) break;
       }
 
       activeJob.completedAt = new Date().toISOString();

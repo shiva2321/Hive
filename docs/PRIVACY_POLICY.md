@@ -58,7 +58,7 @@ The Hive Browser Extension operates under a **Prompt-First Consent** and **Zero-
 ## 6. Contact & Open Source Verification
 
 Hive is fully open-source and auditable. You can inspect all extension source code in the repository:  
-https://github.com/your-org/universal-ai-memory
+https://github.com/shiva2321/Hive
 
-For privacy inquiries or disclosures, contact:  
-`security@hivememory.local`
+For security questions or issue disclosures, please open an issue or security advisory on:  
+https://github.com/shiva2321/Hive/issues

@@ -25,7 +25,7 @@ router.get("/:id", (req: AuthenticatedRequest, res) => {
 
   if (!project) {
     return res.status(404).json({
-      type: "https://api.universalmemory.ai/errors/not-found",
+      type: "urn:hive:error:not-found",
       title: "Project Not Found",
       status: 404,
       detail: `Project '${projId}' was not found.`
@@ -44,7 +44,7 @@ router.get("/:id/rules", (req: AuthenticatedRequest, res) => {
 
   if (!project) {
     return res.status(404).json({
-      type: "https://api.universalmemory.ai/errors/not-found",
+      type: "urn:hive:error:not-found",
       title: "Project Not Found",
       status: 404,
       detail: `Project '${projId}' was not found.`

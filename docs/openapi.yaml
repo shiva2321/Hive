@@ -8,8 +8,6 @@ info:
 servers:
   - url: http://localhost:42424
     description: Local Gateway / Development
-  - url: https://api.universalmemory.ai
-    description: Production Multi-Tenant Cloud
 
 paths:
   /healthz/liveness:

@@ -126,7 +126,7 @@ Used by the extension popup to identify which AI provider is currently open in t
 - **User Data Collection:** Check **"No, I do not collect or use user data for any purpose other than the core functionality."**
 - **Data Sharing:** Check **"I do not transfer or sell user data to third parties."**
 - **Data Security:** Confirm that data is transmitted securely (over local loopback or encrypted channels).
-- **Privacy Policy Link:** Provide the public HTTPS URL to your hosted `PRIVACY_POLICY.md` (e.g., `https://your-domain.com/privacy` or GitHub Pages link).
+- **Privacy Policy Link:** Provide the public HTTPS URL to your hosted `PRIVACY_POLICY.md` (`https://github.com/shiva2321/Hive/blob/main/docs/PRIVACY_POLICY.md`).
 
 ---
 

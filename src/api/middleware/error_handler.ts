@@ -21,7 +21,7 @@ export function errorHandler(
   console.error(`[${correlationId}] Unhandled Error:`, err);
 
   const problem: ProblemDetails = {
-    type: err.type || "https://api.universalmemory.ai/errors/internal-server-error",
+    type: err.type || "urn:hive:error:internal-server-error",
     title: err.title || "Internal Server Error",
     status,
     detail: err.message || "An unexpected error occurred while processing your request.",
