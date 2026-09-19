@@ -229,9 +229,10 @@ export class MemoryExtractor {
           }
         }
 
-        // Extract Guardrails & Explicit Rejections from chat text
+        // Extract Guardrails, Explicit Rejections, and User Preferences from chat text
         for (const msg of convo.messages) {
           this.extractRejectionsAndDecisions(msg.content, projNodeId, msg.timestamp, msg.id, nodesMap, edges);
+          this.extractPreferences(msg.content, projNodeId, msg.timestamp, msg.id, nodesMap, edges);
         }
       }
     }
@@ -315,6 +316,58 @@ export class MemoryExtractor {
             });
           }
         }
+      }
+    }
+  }
+
+  private static extractPreferences(
+    content: string,
+    projNodeId: string,
+    timestamp: string,
+    msgId: string,
+    nodesMap: Map<string, GraphNode>,
+    edges: GraphEdge[]
+  ) {
+    if (!content || content.length < 15) return;
+
+    const PREFERENCE_PATTERNS = [
+      /(?:I|we)\s+(?:always\s+)?prefer(?:s)?\s+(?:to\s+use\s+|using\s+)?([^.\n]{3,80})/gi,
+      /(?:I|we)\s+(?:really\s+)?(?:like|love)\s+(?:to\s+use\s+|using\s+)?([^.\n]{3,80})/gi,
+      /(?:I|we)\s+(?:always|usually|typically)\s+use\s+([^.\n]{3,80})/gi
+    ];
+
+    for (const regex of PREFERENCE_PATTERNS) {
+      let match;
+      while ((match = regex.exec(content)) !== null) {
+        const subject = match[1].trim().replace(/[.,;!?]+$/, "");
+        if (subject.length < 3) continue;
+
+        const prefNodeId = `node_pref_${subject.toLowerCase().replace(/[^a-z0-9]/g, "_").slice(0, 40)}`;
+        if (nodesMap.has(prefNodeId)) continue;
+
+        nodesMap.set(prefNodeId, {
+          id: prefNodeId,
+          type: "UserPreference",
+          name: subject.slice(0, 60),
+          summary: `User preference: ${subject}`,
+          attributes: { rawStatement: match[0].trim() },
+          firstSeenAt: timestamp,
+          lastSeenAt: timestamp,
+          confidence: 0.85
+        });
+
+        edges.push({
+          id: `edge_${projNodeId}_prefers_${prefNodeId}`,
+          sourceNodeId: projNodeId,
+          targetNodeId: prefNodeId,
+          relation: "PREFERS",
+          context: match[0].trim(),
+          timestamp,
+          validFrom: timestamp,
+          validTo: null,
+          status: "active",
+          evidenceMessageIds: [msgId]
+        });
       }
     }
   }
