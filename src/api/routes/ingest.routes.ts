@@ -8,6 +8,10 @@ import { ConversationFilter } from "../../pipeline/filter";
 import { ProjectClusterer } from "../../pipeline/clustering";
 import { MemoryExtractor } from "../../pipeline/extractor";
 import { DatabaseManager } from "../../db/postgres_pool";
+import { ConversationChunker } from "../../pipeline/chunker";
+import { LlmExtractor } from "../../pipeline/llm_extractor";
+import { OpenRouterClient } from "../../pipeline/openrouter_client";
+import { config } from "../../config/env";
 
 const router = Router();
 const queue = IngestionQueue.getInstance();
@@ -150,7 +154,50 @@ function parseTextChat(content: string, filename: string): CanonicalConversation
   };
 }
 
-function processAndIngestConversations(rawData: any) {
+async function runLlmEnrichment(
+  substantial: CanonicalConversation[],
+  projects: import("../../core/types").ProjectCluster[]
+): Promise<{ ranLlmPass: boolean; llmNodesCreated: number }> {
+  const apiKey = OpenRouterClient.getActiveKey();
+  if (!apiKey) {
+    return { ranLlmPass: false, llmNodesCreated: 0 };
+  }
+
+  let llmNodesCreated = 0;
+  const projectByConvoId = new Map<string, import("../../core/types").ProjectCluster>();
+  for (const p of projects) {
+    for (const cid of p.conversationIds) projectByConvoId.set(cid, p);
+  }
+
+  for (const convo of substantial) {
+    const project = projectByConvoId.get(convo.id);
+    const chunks = ConversationChunker.chunkConversation(convo);
+
+    for (const chunk of chunks) {
+      try {
+        const payload = await LlmExtractor.extractFromChunk(chunk, {
+          apiKey,
+          model: config.OPENROUTER_DEFAULT_MODEL,
+          projectId: project?.id,
+          projectName: project?.name
+        });
+        const { nodes } = LlmExtractor.ingestPayload(payload, {
+          conversationId: convo.id,
+          conversationTitle: convo.title,
+          projectId: project?.id,
+          projectName: project?.name
+        });
+        llmNodesCreated += nodes.length;
+      } catch (err: any) {
+        console.warn(`[Hive] LLM enrichment failed for "${convo.title}": ${err.message}`);
+      }
+    }
+  }
+
+  return { ranLlmPass: true, llmNodesCreated };
+}
+
+async function processAndIngestConversations(rawData: any) {
   let convos: CanonicalConversation[] = [];
 
   if (Array.isArray(rawData)) {
@@ -265,6 +312,8 @@ function processAndIngestConversations(rawData: any) {
     nodesCount = extraction.nodes.length;
     edgesCount = extraction.edges.length;
     insightsCount = extraction.insights.length;
+
+    await runLlmEnrichment(toSave, projects);
   } else {
     const stats = store.getStats();
     projectsCount = stats.projects;
@@ -286,9 +335,9 @@ function processAndIngestConversations(rawData: any) {
 }
 
 // 3. Primary Ingestion (Handles both single conversation and arrays from extension & client)
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   try {
-    const result = processAndIngestConversations(req.body);
+    const result = await processAndIngestConversations(req.body);
     res.json(result);
   } catch (err: any) {
     console.error("[Hive] Error in POST /api/ingest:", err);
@@ -297,9 +346,9 @@ router.post("/", (req, res) => {
 });
 
 // 4. Synchronous Ingestion Alias
-router.post("/sync", (req, res) => {
+router.post("/sync", async (req, res) => {
   try {
-    const result = processAndIngestConversations(req.body);
+    const result = await processAndIngestConversations(req.body);
     res.json(result);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -307,7 +356,7 @@ router.post("/sync", (req, res) => {
 });
 
 // 5. Import Chat Archive Zip (.zip containing txt and json chat files)
-router.post("/import-archive", (req, res) => {
+router.post("/import-archive", async (req, res) => {
   try {
     let zipBuffer: Buffer | null = null;
 
@@ -364,7 +413,7 @@ router.post("/import-archive", (req, res) => {
       return res.status(400).json({ error: "No valid .txt or .json conversations found in the uploaded zip archive." });
     }
 
-    const result = processAndIngestConversations(extractedConvos);
+    const result = await processAndIngestConversations(extractedConvos);
     res.json({
       ...result,
       archiveFilesProcessed: entries.length,
