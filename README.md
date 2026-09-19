@@ -359,7 +359,7 @@ universal-ai-memory/
 │   │   └── context_generator.ts
 │   ├── storage/
 │   │   └── graph_store.ts   # SQLite graph persistence
-│   └── workers/             # BullMQ async ingestion workers
+│   └── workers/             # Durable local ingestion queue + worker
 ├── ui/
 │   └── index.html           # Interactive knowledge graph dashboard
 ├── docs/

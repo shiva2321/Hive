@@ -56,8 +56,8 @@ async function runTests() {
   assert.notStrictEqual(blindIndex1, blindIndexB, "Blind indexes across different tenants collided!");
   console.log("  ✓ Blind indexing verified for zero-knowledge search.\n");
 
-  // Test 4: Asynchronous Queue & Distributed Worker
-  console.log("[Test 4] Asynchronous Queue & Ingestion Worker Pipeline");
+  // Test 4: Durable Local Queue & Ingestion Worker
+  console.log("[Test 4] Durable Ingestion Queue & Worker Pipeline");
   const queue = IngestionQueue.getInstance();
   const worker = new IngestionWorker();
 
@@ -92,7 +92,7 @@ async function runTests() {
   });
 
   assert.ok(progressObserved, "Failed: Job progress events were not emitted!");
-  console.log("  ✓ Asynchronous BullMQ worker pipeline verified with 100% completion.\n");
+  console.log("  ✓ Durable SQLite-backed ingestion queue verified with 100% completion.\n");
 
   // Test 5: Database Manager Health Probes
   console.log("[Test 5] High-Availability Health Probes");

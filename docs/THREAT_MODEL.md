@@ -12,7 +12,7 @@ This document presents the STRIDE threat analysis for the **Universal Cross-AI M
 | **Tampering** | Malicious alteration of historical decisions or database records. | High | **AES-256-GCM** authenticated encryption with 128-bit authentication tags. Tampered ciphertext immediately fails verification and aborts. |
 | **Repudiation** | User denies altering architectural guardrails or accessing sensitive memories. | Medium | Append-only `audit_logs` table recording actor ID, tenant ID, action, IP address, and timestamp. |
 | **Information Disclosure** | Cloud database breach leaks developer API keys, database credentials, or proprietary source code. | Critical | **Zero-Knowledge Envelope Encryption**: Plaintext is never stored unencrypted. Local pre-embedding **regex & Shannon entropy scanner** redacts keys before storage. |
-| **Denial of Service** | Ingestion flood: uploading 1GB zip archives simultaneously to exhaust server RAM and CPU. | High | **Asynchronous BullMQ worker queues** with concurrency caps, streaming unzippers, and sliding-window token bucket rate limiters (HTTP 429). |
+| **Denial of Service** | Ingestion flood: uploading 1GB zip archives simultaneously to exhaust server RAM and CPU. | High | Durable SQLite-backed ingestion queue (jobs process one at a time, survive a process restart) plus sliding-window token bucket rate limiting (HTTP 429). No true concurrency cap or streaming unzipper exists yet — see the ingestion-completeness plan for follow-up. |
 | **Elevation of Privilege** | Tenant A accesses Tenant B's memories by querying foreign node IDs. | Critical | PostgreSQL **Row-Level Security (RLS)** enforces tenant isolation at the database engine level via `current_setting('app.current_tenant_id')`. |
 
 ---
