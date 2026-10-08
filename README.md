@@ -2,19 +2,19 @@
 
 # 🐝 Hive — Universal AI Memory
 
-**Your collective intelligence substrate. Every AI conversation you have ever had, unified into one living, self-evolving knowledge graph.**
+**One local, searchable memory for your AI conversations. Chats from ChatGPT, Claude, Gemini, Cursor, Antigravity and Claude Code, grouped by project and served back to any MCP-capable AI tool.**
 
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](LICENSE)
 [![Node.js](https://img.shields.io/badge/Node.js-22+-green.svg)](https://nodejs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-7-blue.svg)](https://typescriptlang.org)
-[![MCP](https://img.shields.io/badge/MCP-2.0-purple.svg)](https://modelcontextprotocol.io)
+[![MCP](https://img.shields.io/badge/MCP-server-purple.svg)](https://modelcontextprotocol.io)
 [![Privacy: Local-First](https://img.shields.io/badge/Privacy-Local--First-red.svg)](#security--privacy)
 
 </div>
 
 ---
 
-> **Hive** is a local-first, zero-knowledge, self-evolving memory network that captures your AI conversation history across every platform and IDE you use — and makes it universally accessible, searchable, and actionable anywhere you work.
+> **Hive** is a local-first memory layer for AI conversations. It collects your chat history from several tools, strips secrets, groups it by project, builds a knowledge graph of decisions, tech choices and rejected approaches, and serves it back to AI assistants through MCP. Everything is stored in a local SQLite database, with content encrypted at rest.
 
 ---
 
@@ -22,11 +22,11 @@
 
 ![Hive Executive Command Center](docs/screenshots/hive_overview_verified.png)
 
-*The Hive Executive Command Center provides an instant operational picture of your collective AI memory substrate: high-level KPI metric cards, active provider breakdown, an interactive 13-project card grid with 1-click exploration, self-evolving HiveBrain inquiries, critical architecture guardrails, and real-time synaptic extractions.*
+*The dashboard overview: KPI cards, active providers, a project card grid, HiveBrain inquiries, architecture guardrails and recent extractions.*
 
 ![Hive Constellation Knowledge Graph](docs/screenshots/hive_knowledge_graph_living.png)
 
-*The Constellation Knowledge Graph replaces chaotic hairball layouts with 13 spacious, dedicated project galaxies. Satellite nodes orbit cleanly around their respective project hubs, with interactive hover tooltips and a sleek bottom inspector drawer.*
+*The knowledge graph view: one cluster per project, with satellite nodes around each project hub, hover tooltips and a bottom inspector drawer.*
 
 ---
 
@@ -38,10 +38,10 @@ Most developers use multiple AI assistants simultaneously — ChatGPT for ideati
 
 **Hive solves this** by:
 
-- 🕸️ **Ingesting** all your AI conversations across every platform and IDE
+- 🕸️ **Ingesting** your AI conversations from the supported chat sites and local coding tools (see the table below)
 - 🧹 **Sanitizing** secrets, PII, and ephemeral noise before storage
-- 🧠 **Clustering** scattered chats into coherent project workstreams automatically
-- 🗺️ **Building** a temporal knowledge graph of your decisions, tech stacks, and anti-patterns
+- 🧠 **Grouping** scattered chats into project workstreams with rule-based matching
+- 🗺️ **Building** a knowledge graph of your decisions, tech stacks, and rejected approaches
 - 🔌 **Serving** this knowledge back to any AI tool via **MCP** — so your next chat already knows what you built before
 
 ---
@@ -52,30 +52,30 @@ Most developers use multiple AI assistants simultaneously — ChatGPT for ideati
 
 | Source | Method | Details |
 |--------|---------|---------|
-| **ChatGPT** | Export ZIP + Live Extension | `conversations.json` bulk import or real-time Chrome sync |
-| **Claude** | Export ZIP + Live Extension | `claude.ai` conversation export or live tree extraction |
-| **Gemini** | Takeout + Live Extension | `gemini.google.com` live capture + sequential full-history backfill |
-| **Cursor** | SQLite State + Plan Scanner | Reads `state.vscdb` (`cursorDiskKV` composer sessions & chat bubbles), `.plan.md` plans, and `agent-transcripts/*.jsonl` |
-| **Antigravity** | Local file scanner | Scans session `.md` brain notes and `.system_generated/logs/transcript.jsonl` |
-| **Claude Code** | Local file scanner | Reads `~/.claude/` JSONL session logs & project memory files |
-| **VS Code / Copilot** | Local file scanner | Extension activity logs |
-| **JetBrains AI** | Local file scanner | AI Assistant conversation exports |
-| **DeepSeek, Grok, Perplexity, OpenCode, Zed** | Bulk import | Generic JSONL/JSON parser |
+| **ChatGPT** | Export + live extension | `conversations.json` bulk import, or live capture of the conversation you have open |
+| **Claude** | Export + live extension | `claude.ai` export, or live capture with full-history backfill |
+| **Gemini** | Takeout + live extension | Takeout import, or live capture with sequential full-history backfill |
+| **Cursor** | Local scanner | Reads `state.vscdb` (`cursorDiskKV` composer sessions and chat bubbles), `.plan.md` plans, and `agent-transcripts/*.jsonl` |
+| **Antigravity** | Local scanner | Scans session `.md` brain notes and `.system_generated/logs/transcript.jsonl` |
+| **Claude Code** | Local scanner | Reads `~/.claude/` JSONL session logs and project memory files |
+| **DeepSeek, Perplexity, Grok, Mistral** | Live extension only | Captures the conversation you have open. No history backfill yet |
 
-### 🔒 Zero-Knowledge Security Pipeline
+VS Code / Copilot, JetBrains AI, Zed and OpenCode do not have importers yet (see the roadmap).
 
-Every byte passes through a multi-stage security pipeline **before** it touches storage:
+### 🔒 Security Pipeline
 
-1. **Secret Scrubbing** — Regex + Shannon entropy scanner strips API keys, tokens, connection strings, and private keys
-2. **AES-256-GCM Envelope Encryption** — All stored content is encrypted with per-record CSPRNG nonces
-3. **HMAC Blind Indexing** — Searchable without ever decrypting plaintext (HMAC-SHA256 over search terms)
-4. **Ephemeral Noise Filter** — Strips trivial chats (grammar fixes, one-off queries) — only engineering signal is retained
+Conversation text goes through these steps before it is stored:
 
-### 🧠 Self-Evolving Knowledge Graph
+1. **Secret Scrubbing** — A regex scrubber replaces API keys (OpenAI, Anthropic, GitHub, AWS), private keys, database connection strings, bearer tokens, JWTs and email addresses with placeholders
+2. **AES-256-GCM Encryption** — Stored content is encrypted with a random 96-bit nonce per record
+3. **HMAC Blind Indexing** — Exact-match lookups on encrypted fields use HMAC-SHA256 blind indexes
+4. **Ephemeral Noise Filter** — A keyword-based filter drops trivial chats (grammar fixes, translations, jokes) and keeps conversations with engineering content
+
+### 🧠 Project Knowledge Graph
 
 ![Knowledge Graph Canvas](docs/screenshots/hive_knowledge_graph_living.png)
 
-The graph organises your knowledge into **five semantic tiers** using a living Force-Directed Constellation layout:
+The graph organises your knowledge into **five semantic tiers** using a force-directed constellation layout:
 
 | Tier | Role | Contents |
 |------|------|---------|
@@ -89,11 +89,13 @@ Click any node to inspect its connections, evidence messages, and confidence sco
 
 ![Node Inspector](docs/screenshots/hive_knowledge_graph_sidebar.png)
 
-### 🔍 Intelligent Project Clustering
+### 🔍 Project Grouping
 
 ![Projects Tab](docs/screenshots/hive_projects_portfolio_exporter.png)
 
-Hive automatically groups conversations across different AI providers into coherent **project workstreams**. It does not require you to manually tag anything — the clustering engine detects shared tech stacks, overlapping terminology, and decision patterns to learn that "the auth thing I was building in Claude" and "the JWT middleware question in ChatGPT" belong to the same project.
+Hive groups conversations from different AI providers into **project workstreams** without manual tagging. Grouping is rule-based, not a learned model. It uses the project folder when one exists (for example Claude Code sessions), then keyword and tech-stack matching on titles and early messages, so a Claude chat and a ChatGPT chat about the same project can land together.
+
+> **Current limitation:** the rule list in [`src/pipeline/clustering.ts`](src/pipeline/clustering.ts) is tuned to the author's own projects. Other users' chats mostly fall into the general buckets until they add rules for their own projects.
 
 ### 💬 All Chats — Unified Reader
 
@@ -115,16 +117,16 @@ AI (with Hive MCP): "Based on your previous projects, you use JWT +
   the same pattern?"
 ```
 
-### 🤖 Self-Overseeing HiveBrain
+### 🤖 HiveBrain: Contradiction Detector
 
 ![Telemetry and Inquiries](docs/screenshots/hive_brain_inquiries_telemetry.png)
 
-The `HiveBrain` autonomous audit engine runs continuously in the background. It:
+`HiveBrain` (`src/core/hive_brain.ts`) audits the knowledge graph for conflicts between projects. It runs once each time the daemon starts, not as a continuous background process. It:
 
-- **Detects contradictions** — e.g., two projects using conflicting database strategies
-- **Flags ambiguities** — e.g., a tech choice adopted in one project but rejected in another
-- **Surfaces inquiries** — prompts you to resolve architectural discrepancies when it cannot determine the right answer autonomously
-- **Records resolutions** — permanently commits your answers back into the knowledge graph
+- **Detects contradictions** — for example, a technology rejected in one project and used in another
+- **Flags ambiguities** — records them as open inquiries instead of picking a side
+- **Surfaces inquiries** — lists them in the dashboard and over MCP so you can resolve them
+- **Records resolutions** — saves your answers back into the knowledge graph
 
 ---
 
@@ -151,7 +153,7 @@ npm run build
 npm run start:server
 ```
 
-This starts the local daemon on **port 42424**. Keep this terminal open.
+This starts the daemon on **port 42424**. Keep this terminal open. By default it binds to `0.0.0.0` with open CORS, so set `HOST=127.0.0.1` (and `ALLOWED_ORIGINS`) in your environment to keep it reachable from this machine only.
 
 - **Dashboard**: http://localhost:42424
 - **API Health**: http://localhost:42424/api/stats
@@ -164,12 +166,12 @@ The Hive Browser Extension bridges web-based AI platforms directly into your Uni
 
 #### Installation Methods:
 - **1-Click Web Download:** Visit the Hive Dashboard at `http://localhost:42424` -> Click **📥 Browser Sync** -> Click **Download Extension (.zip)**. Unzip and click "Load unpacked".
-- **Local Workspace:** In `chrome://extensions` or `edge://extensions`, enable **Developer Mode**, click **"Load unpacked"**, and select `e:\universal-ai-memory\extension`.
-- **Chrome Web Store:** Direct install available via Web Store package.
+- **Local Workspace:** In `chrome://extensions` or `edge://extensions`, enable **Developer Mode**, click **"Load unpacked"**, and select the `extension/` folder of this repo.
+- **Chrome Web Store:** Not published yet. A submission guide is in [`docs/CHROME_STORE_SUBMISSION_GUIDE.md`](docs/CHROME_STORE_SUBMISSION_GUIDE.md).
 
 #### Dual-Mode Sync Engine:
-1. **System Native (Primary):** Connects to `http://localhost:42424` via loopback with zero cloud exposure.
-2. **Cloud Processing Fallback:** If the local daemon is offline or you are away from your workstation, conversations are securely staged in local browser storage or routed to your cloud processing endpoint, then automatically flushed to Hive Native upon daemon connection.
+1. **Local daemon (primary):** Sends to `http://localhost:42424` on your machine.
+2. **Offline queue / optional cloud endpoint:** If the daemon is not running, conversations are held in local browser storage and flushed when it comes back. If you configure a cloud endpoint in the extension, they go there instead.
 
 #### Prompt-First Privacy & Secret Redaction:
 - When you chat on an AI provider, Hive displays a non-intrusive in-page consent prompt asking if you'd like to sync the thread.
@@ -184,7 +186,8 @@ The Hive Browser Extension bridges web-based AI platforms directly into your Uni
 - 🔍 **Perplexity AI** (`perplexity.ai`)
 - 🚀 **Grok / xAI** (`x.ai`)
 - 🌊 **Mistral AI** (`chat.mistral.ai`)
-- 🌐 **Generic AI Fallback** (any DOM conversation interface)
+
+Live capture takes the conversation you have open. Full-history backfill is implemented for Claude and Gemini only.
 
 ### 4. Import Your Chat History (Bulk)
 
@@ -200,7 +203,7 @@ npm run cli import ~/Downloads/claude-export.zip
 # Google Takeout (Gemini): takeout.google.com → Gemini Apps Activity
 npm run cli import ~/Downloads/takeout-gemini.zip
 
-# Auto-scan all local IDE agents (Antigravity, Claude Code, Cursor)
+# Scan local agents (Antigravity, Claude Code, Cursor)
 npm run cli scan-local
 ```
 
@@ -214,13 +217,13 @@ Add Hive to your AI client MCP configuration. For Claude Desktop:
   "mcpServers": {
     "hive": {
       "command": "node",
-      "args": ["/absolute/path/to/universal-ai-memory/dist/serving/mcp_server.js"]
+      "args": ["/absolute/path/to/Hive/dist/serving/mcp_server.js"]
     }
   }
 }
 ```
 
-For **Cursor** (`~/.cursor/mcp.json`), **Antigravity**, or **VS Code** (Copilot MCP), use the same `command`/`args` structure.
+Other MCP clients (for example Cursor's `~/.cursor/mcp.json`) use the same `command`/`args` structure; check your client's docs for where the config file lives.
 
 ---
 
@@ -249,7 +252,7 @@ Once connected, your AI tools can call these tools against your Hive knowledge:
 
 | Tool | Description |
 |------|-------------|
-| `search_project_memory` | Keyword/semantic search across all past conversations and projects |
+| `search_project_memory` | Keyword search across past conversations and projects (vector search is on the roadmap) |
 | `get_project_context` | Full LLM-ready markdown context pack for a specific project |
 | `get_guardrails_and_negative_knowledge` | All rejected tools/patterns and the reasons why |
 | `get_developer_preferences` | Your coding style, preferred libraries, and workflow habits |
@@ -263,7 +266,7 @@ Once connected, your AI tools can call these tools against your Hive knowledge:
 
 ## 🔐 Security & Privacy
 
-Hive is built on a **zero-trust, local-first** architecture. Your conversation content **never leaves your machine** unencrypted.
+Hive is local-first: data is stored in a local SQLite database on your machine, with content encrypted at rest. Two things can send data off the machine: the optional cloud endpoint in the browser extension, and the optional LLM enrichment pass (OpenRouter), which sends conversation text to the model you pick if you set `OPENROUTER_API_KEY`. Skip it with `--no-llm` or by leaving the key unset.
 
 ### Secret Scrubbing (Pre-Storage)
 
@@ -274,18 +277,20 @@ Before any content is indexed, the `SecretSanitizer` strips:
 | `sk-[A-Za-z0-9]{32,}` (OpenAI) | `[REDACTED_OPENAI_KEY]` |
 | `sk-ant-[A-Za-z0-9_-]{32,}` (Anthropic) | `[REDACTED_ANTHROPIC_KEY]` |
 | `(?:AKIA|ASIA)[A-Z0-9]{16}` (AWS) | `[REDACTED_AWS_KEY]` |
-| `(?:ghp|gho)_[A-Za-z0-9_]{20,}` (GitHub) | `[REDACTED_GITHUB_TOKEN]` |
+| `(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9_]{20,255}` (GitHub) | `[REDACTED_GITHUB_TOKEN]` |
 | `postgres://user:pass@host/db` | `[REDACTED_DB_CONNECTION_STRING]` |
 | `-----BEGIN PRIVATE KEY-----` | `[REDACTED_PRIVATE_KEY]` |
-| High-entropy strings (>4.5 bits/char) | `[REDACTED_HIGH_ENTROPY]` |
+| `Bearer <token>` | `Bearer [REDACTED_BEARER_TOKEN]` |
+| JWTs (`eyJ…`) | `[REDACTED_JWT_TOKEN]` |
+| Email addresses | `[REDACTED_EMAIL]` |
 
 ### Cryptographic Specification
 
 - **Algorithm**: AES-256-GCM (NIST SP 800-38D)
-- **Key Derivation**: PBKDF2-SHA256, 100,000 iterations, per-tenant salt
+- **Key Derivation**: PBKDF2-SHA256, 100,000 iterations, salt derived from the tenant id
 - **Nonce/IV**: 96-bit CSPRNG per record (never reused)
 - **Authentication Tag**: 128-bit — tampered ciphertext aborts immediately
-- **Search**: HMAC-SHA256 blind indexing — search without decryption
+- **Search**: HMAC-SHA256 blind indexes for exact-match lookups
 
 ### STRIDE Threat Model
 
@@ -322,16 +327,16 @@ See [`docs/THREAT_MODEL.md`](docs/THREAT_MODEL.md) for the full threat matrix co
  Browser Ext (Manifest V3)     Source Parsers
  chatgpt.com  ──────────────▶  chatgpt · claude · gemini
  claude.ai    ──────────────▶  cursor · antigravity
- gemini.google.com ─────────▶  claude_code · vscode · zed · jetbrains
+ gemini.google.com ─────────▶  claude_code
 
  Connected IDEs via MCP
- Claude Desktop · Cursor · Antigravity · VS Code · Zed
+ Any MCP client (stdio or SSE)
 ```
 
 ### Source Tree
 
 ```
-universal-ai-memory/
+Hive/
 ├── extension/               # Browser extension (Manifest V3)
 │   ├── manifest.json
 │   ├── popup.html / popup.js
@@ -342,7 +347,7 @@ universal-ai-memory/
 │   ├── core/
 │   │   ├── types.ts         # Canonical data types
 │   │   ├── crypto.ts        # AES-256-GCM + HMAC blind indexing
-│   │   └── hive_brain.ts    # Self-overseeing audit engine
+│   │   └── hive_brain.ts    # Contradiction / inquiry audit engine
 │   ├── ingestion/
 │   │   ├── parsers/         # Per-provider parsers
 │   │   │   ├── chatgpt_parser.ts
@@ -350,7 +355,7 @@ universal-ai-memory/
 │   │   │   ├── claude_code_parser.ts
 │   │   │   ├── cursor_parser.ts
 │   │   │   ├── gemini_parser.ts
-│   │   │   └── local_ide_parser.ts
+│   │   │   └── local_ide_parser.ts  # Antigravity transcripts
 │   │   ├── omni_scanner.ts  # Local IDE path auto-detection
 │   │   ├── importer.ts      # Zip/JSON bulk importer
 │   │   └── sanitizer.ts     # Pre-storage secret scrubber
@@ -390,6 +395,8 @@ Coverage: sanitization, per-provider parsing, ephemeral noise filtering, project
 
 ## 🗺️ Roadmap
 
+- [ ] **More importers** — VS Code / Copilot, JetBrains AI, Zed, OpenCode
+- [ ] **History backfill** for ChatGPT, DeepSeek, Perplexity, Grok and Mistral in the extension
 - [ ] **Vector Embeddings** — Local sentence-transformer embeddings for semantic search
 - [ ] **Multi-Device Sync** — Optional E2E encrypted cloud sync for cross-machine access
 - [ ] **Firefox / Safari Extensions** — Expand beyond Chromium
@@ -412,13 +419,13 @@ Coverage: sanitization, per-provider parsing, ephemeral noise filtering, project
 
 ## 📜 License
 
-[ISC](LICENSE) — © 2026 Hive Contributors
+[ISC](LICENSE) — © 2026 Shivam Prajapati
 
 ---
 
 <div align="center">
 
-**Built for developers who refuse to forget what they have already learned.**
+**Built for developers who keep re-explaining the same project to every AI tool.**
 
 *🐝 Hive — One brain, every AI.*
 
