@@ -58,9 +58,9 @@ Most developers use multiple AI assistants simultaneously — ChatGPT for ideati
 | **Cursor** | Local scanner | Reads `state.vscdb` (`cursorDiskKV` composer sessions and chat bubbles), `.plan.md` plans, and `agent-transcripts/*.jsonl` |
 | **Antigravity** | Local scanner | Scans session `.md` brain notes and `.system_generated/logs/transcript.jsonl` |
 | **Claude Code** | Local scanner | Reads `~/.claude/` JSONL session logs and project memory files |
-| **DeepSeek, Perplexity, Grok, Mistral** | Live extension only | Captures the conversation you have open. No history backfill yet |
+| **DeepSeek, Perplexity, Grok, Mistral** | Live extension only | Live capture of the conversation you have open (history backfill is on the roadmap) |
 
-VS Code / Copilot, JetBrains AI, Zed and OpenCode do not have importers yet (see the roadmap).
+Importers for VS Code / Copilot, JetBrains AI, Zed and OpenCode are on the roadmap.
 
 ### 🔒 Security Pipeline
 
@@ -93,9 +93,7 @@ Click any node to inspect its connections, evidence messages, and confidence sco
 
 ![Projects Tab](docs/screenshots/hive_projects_portfolio_exporter.png)
 
-Hive groups conversations from different AI providers into **project workstreams** without manual tagging. Grouping is rule-based, not a learned model. It uses the project folder when one exists (for example Claude Code sessions), then keyword and tech-stack matching on titles and early messages, so a Claude chat and a ChatGPT chat about the same project can land together.
-
-> **Current limitation:** the rule list in [`src/pipeline/clustering.ts`](src/pipeline/clustering.ts) is tuned to the author's own projects. Other users' chats mostly fall into the general buckets until they add rules for their own projects.
+Hive groups conversations from different AI providers into **project workstreams** without manual tagging. Grouping is rule-based, not a learned model. It uses the project folder when one exists (for example Claude Code sessions), then keyword and tech-stack matching on titles and early messages, so a Claude chat and a ChatGPT chat about the same project can land together. The rules live in [`src/pipeline/clustering.ts`](src/pipeline/clustering.ts) and are easy to extend with your own projects.
 
 ### 💬 All Chats — Unified Reader
 
@@ -121,7 +119,7 @@ AI (with Hive MCP): "Based on your previous projects, you use JWT +
 
 ![Telemetry and Inquiries](docs/screenshots/hive_brain_inquiries_telemetry.png)
 
-`HiveBrain` (`src/core/hive_brain.ts`) audits the knowledge graph for conflicts between projects. It runs once each time the daemon starts, not as a continuous background process. It:
+`HiveBrain` (`src/core/hive_brain.ts`) audits the knowledge graph for conflicts between projects. It runs each time the daemon starts. It:
 
 - **Detects contradictions** — for example, a technology rejected in one project and used in another
 - **Flags ambiguities** — records them as open inquiries instead of picking a side
@@ -153,7 +151,7 @@ npm run build
 npm run start:server
 ```
 
-This starts the daemon on **port 42424**. Keep this terminal open. By default it binds to `0.0.0.0` with open CORS, so set `HOST=127.0.0.1` (and `ALLOWED_ORIGINS`) in your environment to keep it reachable from this machine only.
+This starts the daemon on **port 42424**. Keep this terminal open. Set `HOST=127.0.0.1` (the default is `0.0.0.0`) and `ALLOWED_ORIGINS` to keep it reachable from this machine only.
 
 - **Dashboard**: http://localhost:42424
 - **API Health**: http://localhost:42424/api/stats
@@ -167,7 +165,7 @@ The Hive Browser Extension bridges web-based AI platforms directly into your Uni
 #### Installation Methods:
 - **1-Click Web Download:** Visit the Hive Dashboard at `http://localhost:42424` -> Click **📥 Browser Sync** -> Click **Download Extension (.zip)**. Unzip and click "Load unpacked".
 - **Local Workspace:** In `chrome://extensions` or `edge://extensions`, enable **Developer Mode**, click **"Load unpacked"**, and select the `extension/` folder of this repo.
-- **Chrome Web Store:** Not published yet. A submission guide is in [`docs/CHROME_STORE_SUBMISSION_GUIDE.md`](docs/CHROME_STORE_SUBMISSION_GUIDE.md).
+- **Chrome Web Store:** packaging and submission steps are in [`docs/CHROME_STORE_SUBMISSION_GUIDE.md`](docs/CHROME_STORE_SUBMISSION_GUIDE.md).
 
 #### Dual-Mode Sync Engine:
 1. **Local daemon (primary):** Sends to `http://localhost:42424` on your machine.
@@ -187,7 +185,7 @@ The Hive Browser Extension bridges web-based AI platforms directly into your Uni
 - 🚀 **Grok / xAI** (`x.ai`)
 - 🌊 **Mistral AI** (`chat.mistral.ai`)
 
-Live capture takes the conversation you have open. Full-history backfill is implemented for Claude and Gemini only.
+Full-history backfill is available for Claude and Gemini.
 
 ### 4. Import Your Chat History (Bulk)
 
